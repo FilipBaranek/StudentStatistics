@@ -1,0 +1,224 @@
+﻿<UserControl x:Class="StudentStatistics.Views.SuccessRateView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:StudentStatistics.Views"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+             mc:Ignorable="d" 
+             d:DesignHeight="1080" d:DesignWidth="1920">
+    <Grid>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="18*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid Grid.Column="0"
+              Background="#FFB300">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0"
+                        VerticalAlignment="Top"
+                        Orientation="Vertical">
+                <Button Style="{DynamicResource PanelButton}"
+                        Command="{Binding NewFileGridTrigger}">
+                    <Button.Content>
+                        <Image Source="/Images/plus_icon.png"/>
+                    </Button.Content>
+                    <Button.ToolTip>
+                        Načítať nový súbor
+                    </Button.ToolTip>
+                </Button>
+
+                <Button Style="{DynamicResource PanelButton}"
+                        Visibility="{Binding RemoveFilesVisibility}"
+                        Command="{Binding RemoveFilesTrigger}">
+                    <Button.Content>
+                        <Image Source="/Images/remove_file.png"/>
+                    </Button.Content>
+                    <Button.ToolTip>
+                        Vymazať načítaný súbor
+                    </Button.ToolTip>
+                </Button>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1"
+                        VerticalAlignment="Bottom"
+                        Orientation="Vertical">
+                <Button Style="{DynamicResource PanelButton}">
+                    <Button.Content>
+                        <Image Source="/Images/question_mark.png"
+                               Stretch="None">
+                            <Image.LayoutTransform>
+                                <ScaleTransform ScaleX="0.05" ScaleY="0.05" />
+                            </Image.LayoutTransform>
+                        </Image>
+                    </Button.Content>
+                    <Button.ToolTip>
+                        <TextBlock>
+                            Táto aplikácia slúži na analýzu informácii
+                            <LineBreak/>
+                            spojených s úspešnosťou študentov
+                        </TextBlock>
+                    </Button.ToolTip>
+                </Button>
+                
+                <Button Style="{DynamicResource PanelButton}">
+                    <Button.Content>
+                        <Image Source="/Images/turn_off.png"
+                               Stretch="None">
+                            <Image.LayoutTransform>
+                                <ScaleTransform ScaleX="0.15" ScaleY="0.15" />
+                            </Image.LayoutTransform>
+                        </Image>
+                    </Button.Content>
+                    <Button.ToolTip>
+                        Odísť z aplikácie
+                    </Button.ToolTip>
+                </Button>
+            </StackPanel>
+
+        </Grid>
+
+        <Grid Grid.Column="1">
+            <Grid.Background>
+                <ImageBrush ImageSource="/Images/background.jpg"/>
+            </Grid.Background>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="6*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Image Source="/Images/logo.png"
+                   Grid.ColumnSpan="2"
+                   Grid.RowSpan="2"
+                   Style="{DynamicResource Logo}"/>
+
+            <lvc:PieChart Series="{Binding Series}" LegendPosition="Right">
+                
+            </lvc:PieChart>
+
+            <Button Grid.Row="1"
+                    Grid.Column="0"
+                    Style="{DynamicResource NavigationButton}"
+                    Content="Detail"/>
+
+            <TextBox Grid.Row="0"
+                     Grid.Column="1"
+                     Style="{DynamicResource Searchbar}"
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
+                </TextBox.InputBindings>
+            </TextBox>
+
+            <TabControl Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="80pt 70pt 80pt 30pt"
+                        Style="{DynamicResource ModernTabControl}">
+                <TabItem Header="Úspešní študenti">
+                    <Grid Background="{DynamicResource TabBackgroundBrush}">
+                        <ListView ItemsSource="{Binding ActualStudents}"
+                                  Style="{DynamicResource List}">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Osobné číslo"
+                                                    DisplayMemberBinding="{Binding PersonalNumber}"
+                                                    Width="100pt"/>
+                                    <GridViewColumn Header="Meno"
+                                                    DisplayMemberBinding="{Binding Name}"
+                                                    Width="100pt"/>
+                                    <GridViewColumn Header="Priezvisko"
+                                                    DisplayMemberBinding="{Binding Surname}"
+                                                    Width="100pt"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Neúspešní študenti">
+                    <Grid Background="{DynamicResource TabBackgroundBrush}">
+                        <ListView Style="{DynamicResource List}">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Osobné číslo"
+                                                    DisplayMemberBinding="{Binding PersonalNumber}"
+                                                    Width="100pt"/>
+                                    <GridViewColumn Header="Meno"
+                                                    DisplayMemberBinding="{Binding Name}"
+                                                    Width="100pt"/>
+                                    <GridViewColumn Header="Priezvisko"
+                                                    DisplayMemberBinding="{Binding Surname}"
+                                                    Width="100pt"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+
+            <Button Grid.Row="1"
+                    Grid.Column="1"
+                    Style="{DynamicResource NavigationButton}"
+                    Content="Exportuj"/>
+
+        </Grid>
+
+        <Border Grid.Column="2"
+                Style="{DynamicResource NewFileGrid}"
+                Visibility="{Binding NewFileGridVisibility}">
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Stretch">
+                    <TextBlock Text="Vyberte požadované súbory"
+                               Style="{DynamicResource NewFileTitle}"/>
+                    <Button Style="{DynamicResource CloseButton}"
+                            Command="{Binding NewFileGridTrigger}"/>
+                </StackPanel>
+                
+                
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Margin="20pt">
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <StackPanel>
+                            <Button Content="Načítaj semester"
+                                    Style="{DynamicResource NewFileButton}"
+                                    Command="{Binding OpenFileCommand}"
+                                    CommandParameter="semester"
+                                    Visibility="{Binding SemesterButtonVisibility}"/>
+                            <Image Source="/Images/checkmark.png"
+                                   Style="{DynamicResource Checkmark}"
+                                   Visibility="{Binding CheckmarkSemesterFileVisibility}"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <Button Content="Načítaj prijímačky"
+                                    Style="{DynamicResource NewFileButton}"
+                                    Command="{Binding OpenFileCommand}"
+                                    CommandParameter="admission"
+                                    Visibility="{Binding AdmissionButtonVisibility}"/>
+                            <Image Source="/Images/checkmark.png"
+                                   Style="{DynamicResource Checkmark}"
+                                   Visibility="{Binding CheckmarkAdmissionFileVisibility}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        
+    </Grid>
+</UserControl>
