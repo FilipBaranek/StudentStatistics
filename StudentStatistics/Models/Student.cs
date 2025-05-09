@@ -9,6 +9,7 @@
         public string StudyProgram { get; private set; }
         public string Nationality { get; private set; }
         public AdmissionProcess AdmissionProcess { get; private set; }
+        public SemesterResults? SemesterResults { get; set; }
 
         public Student(string name, string surname, string gender, int? personalNumber, string studyProgram, string nationality, AdmissionProcess admissionProcess)
         {

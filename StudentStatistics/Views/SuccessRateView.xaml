@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:StudentStatistics.Views"
+             xmlns:skia="clr-namespace:SkiaSharp;assembly=SkiaSharp"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920">
@@ -67,7 +68,8 @@
                     </Button.ToolTip>
                 </Button>
                 
-                <Button Style="{DynamicResource PanelButton}">
+                <Button Style="{DynamicResource PanelButton}"
+                        Command="{Binding AppCloser.CloseApplicationTrigger}">
                     <Button.Content>
                         <Image Source="/Images/turn_off.png"
                                Stretch="None">
@@ -89,89 +91,138 @@
                 <ImageBrush ImageSource="/Images/background.jpg"/>
             </Grid.Background>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="6*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            
             <Image Source="/Images/logo.png"
                    Grid.ColumnSpan="2"
                    Grid.RowSpan="2"
                    Style="{DynamicResource Logo}"/>
 
-            <lvc:PieChart Series="{Binding Series}" LegendPosition="Right">
-                
-            </lvc:PieChart>
+            <Grid Visibility="{Binding StatisticsVisibility}">
 
-            <Button Grid.Row="1"
-                    Grid.Column="0"
-                    Style="{DynamicResource NavigationButton}"
-                    Content="Detail"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="6*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <TextBox Grid.Row="0"
-                     Grid.Column="1"
-                     Style="{DynamicResource Searchbar}"
-                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
-                <TextBox.InputBindings>
-                    <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
-                </TextBox.InputBindings>
-            </TextBox>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-            <TabControl Grid.Row="0"
+                <lvc:PieChart Series="{Binding StudentSeries}"
+                              LegendPosition="Bottom"
+                              LegendTextSize="28"
+                              Height="550pt"/>
+
+                <Button Grid.Row="1"
+                        Grid.Column="0"
+                        Style="{DynamicResource NavigationButton}"
+                        Command="{Binding DetailTrigger}"
+                        Content="Detail"/>
+
+                <TabControl Grid.Row="0"
                         Grid.Column="1"
                         Margin="80pt 70pt 80pt 30pt"
                         Style="{DynamicResource ModernTabControl}">
-                <TabItem Header="Úspešní študenti">
-                    <Grid Background="{DynamicResource TabBackgroundBrush}">
-                        <ListView ItemsSource="{Binding ActualStudents}"
-                                  Style="{DynamicResource List}">
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="Osobné číslo"
-                                                    DisplayMemberBinding="{Binding PersonalNumber}"
-                                                    Width="100pt"/>
-                                    <GridViewColumn Header="Meno"
-                                                    DisplayMemberBinding="{Binding Name}"
-                                                    Width="100pt"/>
-                                    <GridViewColumn Header="Priezvisko"
-                                                    DisplayMemberBinding="{Binding Surname}"
-                                                    Width="100pt"/>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Neúspešní študenti">
-                    <Grid Background="{DynamicResource TabBackgroundBrush}">
-                        <ListView Style="{DynamicResource List}">
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="Osobné číslo"
-                                                    DisplayMemberBinding="{Binding PersonalNumber}"
-                                                    Width="100pt"/>
-                                    <GridViewColumn Header="Meno"
-                                                    DisplayMemberBinding="{Binding Name}"
-                                                    Width="100pt"/>
-                                    <GridViewColumn Header="Priezvisko"
-                                                    DisplayMemberBinding="{Binding Surname}"
-                                                    Width="100pt"/>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
-                    </Grid>
-                </TabItem>
-            </TabControl>
+                    <TabItem Header="Úspešní študenti"
+                             IsSelected="{Binding SuccessfullStudentsSelected, Mode=TwoWay}">
+                        <Border Style="{DynamicResource ListViewBorder}">
+                            <Grid>
+                                <ListView ItemsSource="{Binding SuccessfullStudents}"
+                                          Style="{DynamicResource List}">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Osobné číslo"
+                                                            DisplayMemberBinding="{Binding PersonalNumber}"
+                                                            Width="120pt"/>
+                                            <GridViewColumn Header="Meno"
+                                                            DisplayMemberBinding="{Binding Name}"
+                                                            Width="138pt"/>
+                                            <GridViewColumn Header="Priezvisko"
+                                                            DisplayMemberBinding="{Binding Surname}"
+                                                            Width="138pt"/>
+                                            <GridViewColumn Header="Študijná skupina"
+                                                            DisplayMemberBinding="{Binding SemesterResults.StudyGroup}"
+                                                            Width="120pt"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
+                        </Border>
+                    </TabItem>
+                    <TabItem Header="Neúspešní študenti"
+                             IsSelected="{Binding UnsuccessfullStudentsSelected, Mode=TwoWay}">
+                        <Border Style="{DynamicResource ListViewBorder}">
+                            <Grid Background="{DynamicResource TabBackgroundBrush}">
+                                <ListView ItemsSource="{Binding UnsuccessfullStudents}"
+                                          Style="{DynamicResource List}">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Osobné číslo"
+                                                            DisplayMemberBinding="{Binding PersonalNumber}"
+                                                            Width="120pt"/>
+                                            <GridViewColumn Header="Meno"
+                                                            DisplayMemberBinding="{Binding Name}"
+                                                            Width="138pt"/>
+                                            <GridViewColumn Header="Priezvisko"
+                                                            DisplayMemberBinding="{Binding Surname}"
+                                                            Width="138pt"/>
+                                            <GridViewColumn Header="Študijná skupina"
+                                                            DisplayMemberBinding="{Binding SemesterResults.StudyGroup}"
+                                                            Width="120pt"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
+                        </Border>
+                    </TabItem>
+                    <TabItem Header="Prvý ročník"
+                             IsSelected="{Binding AllStudentsSelected, Mode=TwoWay}">
+                        <Border Style="{DynamicResource ListViewBorder}">
+                            <Grid Background="{DynamicResource TabBackgroundBrush}">
+                                <ListView ItemsSource="{Binding Students}"
+                                          Style="{DynamicResource List}">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Osobné číslo"
+                                                            DisplayMemberBinding="{Binding PersonalNumber}"
+                                                            Width="120pt"/>
+                                            <GridViewColumn Header="Meno"
+                                                            DisplayMemberBinding="{Binding Name}"
+                                                            Width="138pt"/>
+                                            <GridViewColumn Header="Priezvisko"
+                                                            DisplayMemberBinding="{Binding Surname}"
+                                                            Width="138pt"/>
+                                            <GridViewColumn Header="Študijná skupina"
+                                                            DisplayMemberBinding="{Binding SemesterResults.StudyGroup}"
+                                                            Width="120pt"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
+                        </Border>
+                    </TabItem>
+                </TabControl>
 
-            <Button Grid.Row="1"
-                    Grid.Column="1"
-                    Style="{DynamicResource NavigationButton}"
-                    Content="Exportuj"/>
+                <StackPanel Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="347pt 70pt 0 0"
+                            Orientation="Horizontal">
+                    <TextBlock Style="{DynamicResource SearchText}"
+                               Text="Vyhľadaj študenta..."/>
+                    <TextBox Style="{DynamicResource Searchbar}"
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+                </StackPanel>
 
+
+                <Button Grid.Row="1"
+                        Grid.Column="1"
+                        Style="{DynamicResource NavigationButton}"
+                        Content="Exportuj"/>
+            </Grid>
         </Grid>
 
         <Border Grid.Column="2"
@@ -186,8 +237,14 @@
                     <Button Style="{DynamicResource CloseButton}"
                             Command="{Binding NewFileGridTrigger}"/>
                 </StackPanel>
-                
-                
+
+                <TextBlock Style="{DynamicResource WrongFileText}"
+                           Visibility="{Binding WrongFileVisibility}">
+                    Nesprávny typ alebo formát
+                    <LineBreak/>
+                    jedného zo zúborov
+                </TextBlock>
+
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
@@ -204,6 +261,10 @@
                             <Image Source="/Images/checkmark.png"
                                    Style="{DynamicResource Checkmark}"
                                    Visibility="{Binding CheckmarkSemesterFileVisibility}"/>
+                            <Button Style="{DynamicResource RemoveFileButton}"
+                                    Command="{Binding RemoveFileTrigger}"
+                                    CommandParameter="semester"
+                                    Visibility="{Binding RemoveSemesterFileVisibility}"/>
                         </StackPanel>
                         <StackPanel>
                             <Button Content="Načítaj prijímačky"
@@ -214,6 +275,10 @@
                             <Image Source="/Images/checkmark.png"
                                    Style="{DynamicResource Checkmark}"
                                    Visibility="{Binding CheckmarkAdmissionFileVisibility}"/>
+                            <Button Style="{DynamicResource RemoveFileButton}"
+                                    Command="{Binding RemoveFileTrigger}"
+                                    CommandParameter="admission"
+                                    Visibility="{Binding RemoveAdmissionFileVisibility}"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>

@@ -2,95 +2,38 @@
 {
     public class SemesterResults
     {
-        private const int _minimalPoints = 30;
-
+        public string StudyGroup { get; private set; }
         public double FirstTest { get; private set; }
         public double SecondTest { get; private set; }
         public double WrittenTestForm { get; private set; }
-        public double TheoreticalTestForm { get; private set; }
+        public double? OralTestForm { get; private set; }
+        public double TestSum { get; private set; }
+        public double SemesterSum { get; private set; }
+        public double MissingPoints { get; private set; }
+        public double TotalPoints { get; private set; }
+        public char Grade { get; private set; }
+        public double ActivitiesSum { get; private set; }
         public double[] Activities { get; private set; }
+        public bool[] Attendance { get; private set; }
 
-        public double ActivitiesSum
+        public SemesterResults(
+            string studyGroup, double firstTest, double secondTest, double writtenTestForm, double? oralTestForm, double testSum, double semesterSum,
+            double missingPoints, double totalPointsm, char grade, double activitiesSum, double[] activities, bool[] attendance
+        )
         {
-            get => GetActivitiesSum();
-        }
-
-        public double TestSum
-        {
-            get => FirstTest + SecondTest;
-        }
-
-        public double SemesterSum
-        {
-            get => ActivitiesSum + TestSum;
-        }
-
-        public double MissingPoints
-        {
-            get
-            {
-                if (SemesterSum < _minimalPoints)
-                {
-                    return _minimalPoints - SemesterSum;
-                }
-
-                return 0;
-            }
-        }
-
-        public double Exam
-        {
-            get => WrittenTestForm + TheoreticalTestForm;
-        }
-
-        public double TotalPoints
-        {
-            get => SemesterSum + Exam;
-        }
-
-        public char Grade
-        {
-            get => GetGrade();
-        }
-
-        public SemesterResults(double firstTest, double secondTest, double writtenTestForm, double theoreticalTestForm, double[] activities)
-        {
+            StudyGroup = studyGroup;
             FirstTest = firstTest;
             SecondTest = secondTest;
             WrittenTestForm = writtenTestForm;
-            TheoreticalTestForm = theoreticalTestForm;
+            OralTestForm = oralTestForm;
+            TestSum = testSum;
+            SemesterSum = semesterSum;
+            MissingPoints = missingPoints;
+            TotalPoints = totalPointsm;
+            Grade = grade;
+            ActivitiesSum = activitiesSum;
             Activities = activities;
-        }
-
-        private double GetActivitiesSum()
-        {
-            double sum = 0;
-
-            foreach (double activityPoints in Activities)
-            {
-                sum += activityPoints;
-            }
-
-            return sum;
-        }
-
-        private char GetGrade()
-        {
-            switch (TotalPoints)
-            {
-                case > 92:
-                    return 'A';
-                case > 84:
-                    return 'B';
-                case > 76:
-                    return 'C';
-                case > 68:
-                    return 'D';
-                case > 60:
-                    return 'E';
-                default:
-                    return 'F';
-            }
+            Attendance = attendance;
         }
 
     }

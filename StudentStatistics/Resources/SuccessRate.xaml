@@ -30,6 +30,7 @@
         </Style.Triggers>
     </Style>
     
+
     <!-- Colors -->
     <Color x:Key="BackgroundGray">#FF2E2E2E</Color>
     <Color x:Key="AccentYellow">#FFB300</Color>
@@ -76,19 +77,21 @@
         <Setter Property="Background" Value="{StaticResource ControlBrush}" />
         <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
         <Setter Property="FontWeight" Value="Bold"/>
-        <Setter Property="Padding" Value="10,5" />
-        <Setter Property="Margin" Value="0,0,2,0"/>
+        <Setter Property="Padding" Value="10pt,8pt" />
+        <Setter Property="Margin" Value="0,0,1pt,0"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TabItem">
                     <Border Name="Border"
-                        Background="{TemplateBinding Background}"
-                        CornerRadius="12,12,0,0"
-                        Padding="{TemplateBinding Padding}">
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{StaticResource AccentBrush}"
+                    BorderThickness="0.5,0.5,0.5,0"
+                    CornerRadius="12,12,0,0"
+                    Padding="{TemplateBinding Padding}">
                         <ContentPresenter x:Name="ContentSite"
-                                      VerticalAlignment="Center"
-                                      HorizontalAlignment="Center"
-                                      ContentSource="Header"/>
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Center"
+                                  ContentSource="Header"/>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="True">
@@ -104,12 +107,19 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <!-- List view -->
+    <Style x:Key="ListViewBorder" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource TabBackgroundBrush}"/>
+        <Setter Property="BorderThickness" Value="0.5"/>
+        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+    </Style>
+    
     <Style TargetType="GridViewColumnHeader">
         <Setter Property="Background" Value="{StaticResource ControlBrush}"/>
         <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -134,18 +144,25 @@
     <Style TargetType="ListViewItem">
         <Setter Property="Background" Value="{StaticResource ControlBrush}"/>
         <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontSize" Value="15pt"/>
+        <Setter Property="FontWeight" Value="Light"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
                 <Setter Property="Foreground" Value="{StaticResource ControlBrush}"/>
+                <Setter Property="FontWeight" Value="Bold"/>
             </Trigger>
             <Trigger Property="IsSelected" Value="True">
                 <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
                 <Setter Property="Foreground" Value="{StaticResource ControlBrush}"/>
+                <Setter Property="FontWeight" Value="Bold"/>
             </Trigger>
         </Style.Triggers>
     </Style>
 
+    <Style TargetType="GridViewRowPresenter">
+        <Setter Property="Height" Value="25pt"/>
+    </Style>
 
 
     <!-- Navigation buttons -->
@@ -181,7 +198,7 @@
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Width" Value="350pt"/>
-        <Setter Property="Height" Value="190pt"/>
+        <Setter Property="Height" Value="220pt"/>
         <Setter Property="Background" Value="#333"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="BorderBrush" Value="#222"/>
@@ -189,7 +206,7 @@
 
     <!-- New file buttons -->
     <Style x:Key="NewFileButton" TargetType="Button">
-        <Setter Property="Margin" Value="20pt"/>
+        <Setter Property="Margin" Value="18pt 35pt"/>
         <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
         <Setter Property="Foreground" Value="{StaticResource ControlBrush}"/>
         <Setter Property="FontWeight" Value="Bold"/>
@@ -248,6 +265,7 @@
     
     <!-- Checkmark -->
     <Style x:Key="Checkmark" TargetType="Image">
+        <Setter Property="Margin" Value="0 -20pt"/>
         <Setter Property="Width" Value="100pt"/>
         <Setter Property="Height" Value="100pt"/>
         <Setter Property="Margin" Value="10pt"/>
@@ -260,19 +278,66 @@
         <Setter Property="FontSize" Value="10pt"/>
     </Style>
     
-    <!-- Search bar -->
+    <!-- Search -->
     <Style x:Key="Searchbar" TargetType="TextBox">
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
         <Setter Property="Width" Value="150pt"/>
         <Setter Property="Height" Value="20pt"/>
-        <Setter Property="Margin" Value="370pt 65pt 0 0"/>
         <Setter Property="Background" Value="{StaticResource ControlBrush}"/>
         <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="FontSize" Value="10pt"/>
         <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="SearchText" TargetType="TextBlock">
+        <Setter Property="Margin" Value="10pt 5pt"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+    </Style>
+    
+    <!-- Wrong file -->
+    <Style x:Key="WrongFileText" TargetType="TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0 50pt"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontSize" Value="20pt"/>
+        <Setter Property="Foreground" Value="Red"/>
+    </Style>
+    
+    <!-- Remove file button -->
+    <Style x:Key="RemoveFileButton" TargetType="Button">
+        <Setter Property="Width" Value="25pt"/>
+        <Setter Property="Height" Value="25pt"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Ellipse x:Name="BackgroundCircle"
+                                 Fill="Red"
+                                 Stroke="{StaticResource ControlBrush}"
+                                 StrokeThickness="1"/>
+                        <Path x:Name="CloseIcon"
+                              Data="M0,0 L8,8 M8,0 L0,8" 
+                              Stroke="{StaticResource ControlBrush}" 
+                              StrokeThickness="2"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="BackgroundCircle" Property="Fill" Value="{StaticResource ControlBrush}"/>
+                            <Setter TargetName="CloseIcon" Property="Stroke" Value="Red"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
 </ResourceDictionary>
