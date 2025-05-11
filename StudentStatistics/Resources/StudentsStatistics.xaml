@@ -17,7 +17,7 @@
     <Style x:Key="DecisionButton" TargetType="Button">
         <Setter Property="Margin" Value="100pt"/>
         <Setter Property="Width" Value="350pt"/>
-        <Setter Property="Height" Value="130pt"/>
+        <Setter Property="Height" Value="110pt"/>
         <Setter Property="FontSize" Value="30pt"/>
         <Setter Property="FontWeight" Value="UltraBold"/>
         <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
@@ -42,6 +42,7 @@
     
     <!-- Main header -->
     <Style x:Key="MainHeader" TargetType="TextBlock">
+        <Setter Property="Margin" Value="0 4pt"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
         <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>

@@ -4,6 +4,8 @@ using System.Windows;
 using System.Windows.Input;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp;
 using StudentStatistics.Commands;
 using StudentStatistics.Models;
 using StudentStatistics.Services;
@@ -21,12 +23,15 @@ namespace StudentStatistics.ViewModels
         private ObservableCollection<Student> _loadedUnsuccessfullStudents;
 
         public AppCloser AppCloser { get; private set; }
+        public SolidColorPaint LegendTextColor { get; private set; }
         public ICommand NewFileGridTrigger { get; private set; }
         public ICommand RemoveFilesTrigger { get; private set; }
         public ICommand RemoveFileTrigger { get; private set; }
         public ICommand OpenFileCommand { get; private set; }
-        public ICommand SearchCommand { get; private set; }
+        public ICommand SearchTrigger { get; private set; }
         public ICommand DetailTrigger { get; private set; }
+        public ICommand DeleteStudentTrigger { get; private set; }
+        public ICommand EditStudentTrigger {  get; private set; }
 
         private bool _successfullStudentsSelected;
         public bool SuccessfullStudentsSelected
@@ -226,6 +231,17 @@ namespace StudentStatistics.ViewModels
             }
         }
 
+        private Visibility _editStudentVisibility;
+        public Visibility EditStudentVisibility
+        {
+            get => _editStudentVisibility;
+            set
+            {
+                _editStudentVisibility = value;
+                OnPropertyChanged(nameof(EditStudentVisibility));
+            }
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public SuccessRateViewModel(Router router)
@@ -241,6 +257,7 @@ namespace StudentStatistics.ViewModels
             _removeSemesterFileVisibility = Visibility.Collapsed;
             _removeAdmissionFileVisibility = Visibility.Collapsed;
             _statisticsVisbility = Visibility.Hidden;
+            _editStudentVisibility = Visibility.Collapsed;
             _searchText = "";
             _loadedSuccessfullStudents = new ObservableCollection<Student>();
             _loadedUnsuccessfullStudents = new ObservableCollection<Student>();
@@ -249,14 +266,17 @@ namespace StudentStatistics.ViewModels
             _unsuccessfullStudents = _loadedUnsuccessfullStudents;
 
             AppCloser = new AppCloser();
+            LegendTextColor = new SolidColorPaint { Color = new SKColor(255, 179, 0) };
             SuccessfullStudentsSelected = true;
             Students = new ObservableCollection<Student>();
             NewFileGridTrigger = new RelayCommand(ToggleNewFileGrid);
             OpenFileCommand = new RelayCommand<string>(OpenFile);
             RemoveFileTrigger = new RelayCommand<string>(RemoveFile);
             RemoveFilesTrigger = new RelayCommand(RemoveFiles);
-            SearchCommand = new RelayCommand(SearchStudent);
+            SearchTrigger = new RelayCommand(SearchStudent);
             DetailTrigger = new RelayCommand(NavigateToDetailStatistics);
+            DeleteStudentTrigger = new RelayCommand(RemoveStudent);
+            EditStudentTrigger = new RelayCommand(ToggleEditStudent);
         }
 
         private void OpenFile(string fileType)
@@ -364,12 +384,24 @@ namespace StudentStatistics.ViewModels
         {
             StudentSeries = new ISeries[]
             {
-                new PieSeries<int> { Values = new int[] { SuccessfullStudents.Count }, Name = "Úspešní študenti" },
-                new PieSeries<int> { Values = new int[] { UnsuccessfullStudents.Count }, Name = "Neúspešní študenti" }
+                new PieSeries<int> 
+                {
+                    Values = new int[] { SuccessfullStudents.Count },
+                    Name = "Úspešní študenti",
+                    Fill = new SolidColorPaint(new SKColor(255, 248, 77)),
+                    Stroke = new SolidColorPaint(SKColors.Black)
+                },
+                new PieSeries<int> 
+                { 
+                    Values = new int[] { UnsuccessfullStudents.Count },
+                    Name = "Neúspešní študenti",
+                    Fill = new SolidColorPaint(SKColors.YellowGreen),
+                    Stroke = new SolidColorPaint(SKColors.Black)
+                }
             };
         }
 
-        public void SearchStudent()
+        private void SearchStudent()
         {
             if (SuccessfullStudentsSelected)
             {
@@ -382,6 +414,54 @@ namespace StudentStatistics.ViewModels
             else if (_loadedAllStudents != null)
             {
                 Students = StudentSorter.SearchStudent(SearchText, _loadedAllStudents);
+            }
+        }
+
+        private Student? FindSelectedStudent(ref ObservableCollection<Student> selectedStudentTab)
+        {
+            if (SuccessfullStudentsSelected)
+            {
+                selectedStudentTab = SuccessfullStudents;
+                return StudentSorter.FindSelectedStudent(SuccessfullStudents);
+            }
+            else if (UnsuccessfullStudentsSelected)
+            {
+                selectedStudentTab = UnsuccessfullStudents;
+                return StudentSorter.FindSelectedStudent(UnsuccessfullStudents);
+            }
+            else if (AllStudentsSelected)
+            {
+                selectedStudentTab = Students;
+                return StudentSorter.FindSelectedStudent(Students);
+            }
+
+            return null;
+        }
+
+        private void RemoveStudent()
+        {
+            ObservableCollection<Student> selectedStudentTab = new ObservableCollection<Student>();
+            Student? selectedStudent = FindSelectedStudent(ref selectedStudentTab);
+
+            if (selectedStudent != null)
+            {
+                selectedStudentTab.Remove(selectedStudent);
+            }
+        }
+
+        private void ToggleEditStudent()
+        {
+            ObservableCollection<Student> selectedStudentTab = new ObservableCollection<Student>();
+            Student? selectedStudent = FindSelectedStudent(ref selectedStudentTab);
+
+            if (EditStudentVisibility == Visibility.Collapsed && selectedStudent != null)
+            {
+                EditStudentVisibility = Visibility.Visible;
+                //todo vypísať všetko info do okna
+            }
+            else
+            {
+                EditStudentVisibility = Visibility.Collapsed;
             }
         }
 

@@ -51,7 +51,7 @@
     </Style>
 
     <!-- TabControl -->
-    <Style x:Key="ModernTabControl" TargetType="TabControl">
+    <Style x:Key="Tab" TargetType="TabControl">
         <Setter Property="Background" Value="{StaticResource TabBackgroundBrush}" />
         <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
         <Setter Property="Template">
@@ -146,6 +146,7 @@
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="FontSize" Value="15pt"/>
         <Setter Property="FontWeight" Value="Light"/>
+        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
@@ -236,7 +237,6 @@
         <Setter Property="Height" Value="25pt"/>
         <Setter Property="HorizontalAlignment" Value="Right"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
-        <Setter Property="Margin" Value="150pt 5pt"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
@@ -338,6 +338,78 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+    
+    <!-- Edit student-->
+    <!-- Edit student window -->
+    <Style x:Key="EditStudent" TargetType="Border">
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Height" Value="330pt"/>
+        <Setter Property="Width" Value="250pt"/>
+        <Setter Property="Background" Value="#222"/>
+        <Setter Property="BorderThickness" Value="0.5pt"/>
+        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+    </Style>
+    
+    <!-- Edit student headline -->
+    <Style x:Key="EditStudentHeadline" TargetType="TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Margin" Value="5pt"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontSize" Value="10pt"/>
+        <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+    </Style>
+    
+    <!-- Edit student text block -->
+    <Style x:Key="EditStudentTextBlock" TargetType="TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontSize" Value="15pt"/>
+        <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+    </Style>
+    
+    <!-- Edit student text box -->
+    <Style x:Key="EditStudentTextBox" TargetType="TextBox">
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Margin" Value="0 0 0 1pt"/>
+        <Setter Property="Width" Value="200pt"/>
+        <Setter Property="Height" Value="30pt"/>
+        <Setter Property="FontSize" Value="20pt"/>
+        <Setter Property="Foreground" Value="LightGoldenrodYellow"/>
+        <Setter Property="TextAlignment" Value="Center"/>
+        <Setter Property="Background" Value="#444"/>
+        <Setter Property="BorderThickness" Value="1pt"/>
+        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+    </Style>
+
+    <!-- Edit student button -->
+    <Style x:Key="EditStudentButton" TargetType="Button">
+        <Setter Property="Margin" Value="7pt"/>
+        <Setter Property="Width" Value="60pt"/>
+        <Setter Property="Height" Value="30pt"/>
+        <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="FontSize" Value="12pt"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}"
+                    CornerRadius="15">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource ControlBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
 </ResourceDictionary>

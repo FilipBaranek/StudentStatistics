@@ -8,8 +8,13 @@
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920">
+
+    <UserControl.InputBindings>
+        <KeyBinding Command="{Binding DeleteStudentTrigger}" Key="Delete"/>
+        <KeyBinding Command="{Binding EditStudentTrigger}" Key="F2"/>
+    </UserControl.InputBindings>
+    
     <Grid>
-        
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="18*"/>
@@ -31,7 +36,7 @@
                         <Image Source="/Images/plus_icon.png"/>
                     </Button.Content>
                     <Button.ToolTip>
-                        Načítať nový súbor
+                        Načítať nové súbory
                     </Button.ToolTip>
                 </Button>
 
@@ -42,7 +47,7 @@
                         <Image Source="/Images/remove_file.png"/>
                     </Button.Content>
                     <Button.ToolTip>
-                        Vymazať načítaný súbor
+                        Vymazať načítané súbory
                     </Button.ToolTip>
                 </Button>
             </StackPanel>
@@ -61,9 +66,9 @@
                     </Button.Content>
                     <Button.ToolTip>
                         <TextBlock>
-                            Táto aplikácia slúži na analýzu informácii
+                            Aplikácia slúži na analýzu informácii
                             <LineBreak/>
-                            spojených s úspešnosťou študentov
+                            spojených s úspešnosťou prijatých študentov
                         </TextBlock>
                     </Button.ToolTip>
                 </Button>
@@ -110,7 +115,9 @@
 
                 <lvc:PieChart Series="{Binding StudentSeries}"
                               LegendPosition="Bottom"
-                              LegendTextSize="28"
+                              LegendTextSize="25"
+                              LegendTextPaint="{Binding LegendTextColor}"
+                              TooltipBackgroundPaint="{Binding LegendTextColor}"
                               Height="550pt"/>
 
                 <Button Grid.Row="1"
@@ -122,7 +129,7 @@
                 <TabControl Grid.Row="0"
                         Grid.Column="1"
                         Margin="80pt 70pt 80pt 30pt"
-                        Style="{DynamicResource ModernTabControl}">
+                        Style="{DynamicResource Tab}">
                     <TabItem Header="Úspešní študenti"
                              IsSelected="{Binding SuccessfullStudentsSelected, Mode=TwoWay}">
                         <Border Style="{DynamicResource ListViewBorder}">
@@ -212,11 +219,79 @@
                     <TextBox Style="{DynamicResource Searchbar}"
                              Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
                         <TextBox.InputBindings>
-                            <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
+                            <KeyBinding Key="Enter" Command="{Binding SearchTrigger}"/>
                         </TextBox.InputBindings>
                     </TextBox>
                 </StackPanel>
 
+                <Border Grid.Row="0"
+                        Grid.Column="1"
+                        Visibility="{Binding EditStudentVisibility}"
+                        Style="{DynamicResource EditStudent}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="0.5*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch">
+                            <TextBlock Style="{DynamicResource EditStudentHeadline}"
+                                       Text="Upraviť/presunúť študenta"/>
+                            <Button Style="{DynamicResource CloseButton}"
+                                    Command="{Binding EditStudentTrigger}"
+                                    Margin="80pt 2pt"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1"
+                                    Orientation="Vertical"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <TextBlock Style="{DynamicResource EditStudentTextBlock}"
+                                       Text="Meno"/>
+                            <TextBox Style="{DynamicResource EditStudentTextBox}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="2"
+                                    Orientation="Vertical"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <TextBlock Style="{DynamicResource EditStudentTextBlock}"
+                                       Text="Priezvisko"/>
+                            <TextBox Style="{DynamicResource EditStudentTextBox}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="3"
+                                    Orientation="Vertical"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <TextBlock Style="{DynamicResource EditStudentTextBlock}"
+                                       Text="Osobné číslo"/>
+                            <TextBox Style="{DynamicResource EditStudentTextBox}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="4"
+                                    Orientation="Vertical"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <TextBlock Style="{DynamicResource EditStudentTextBlock}"
+                                       Text="Študijná skupina"/>
+                            <TextBox Style="{DynamicResource EditStudentTextBox}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="6"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <Button Content="Presunúť"
+                                    Style="{DynamicResource EditStudentButton}"/>
+                            <Button Content="Potvrdiť"
+                                    Style="{DynamicResource EditStudentButton}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
 
                 <Button Grid.Row="1"
                         Grid.Column="1"
@@ -235,7 +310,8 @@
                     <TextBlock Text="Vyberte požadované súbory"
                                Style="{DynamicResource NewFileTitle}"/>
                     <Button Style="{DynamicResource CloseButton}"
-                            Command="{Binding NewFileGridTrigger}"/>
+                            Command="{Binding NewFileGridTrigger}"
+                            Margin="150pt 5pt"/>
                 </StackPanel>
 
                 <TextBlock Style="{DynamicResource WrongFileText}"

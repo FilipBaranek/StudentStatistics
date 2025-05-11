@@ -5,6 +5,20 @@ namespace StudentStatistics.Services
 {
     public static class StudentSorter
     {
+        public static Student? FindSelectedStudent(ObservableCollection<Student> students)
+        {
+            try
+            {
+                var student = students.Where(x => (x.IsSelected));
+
+                return student.ElementAt(0);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         public static ObservableCollection<Student> SearchStudent(string searchText, ObservableCollection<Student> students)
         {
             var sortedStudents = students.Where(x => ($"{x.Name} {x.Surname}").Contains(searchText));
@@ -28,7 +42,7 @@ namespace StudentStatistics.Services
 
         public static ObservableCollection<Student> GrammarSchoolStudents(ObservableCollection<Student> students)
         {
-            var gramarSchoolStudents = students.Where(x => (x.AdmissionProcess.HighSchoolType.Equals("gymnazium")));
+            var gramarSchoolStudents = students.Where(x => (x.AdmissionProcess.HighSchoolType.Equals("gymnázium")));
 
             return new ObservableCollection<Student>(gramarSchoolStudents);
         }

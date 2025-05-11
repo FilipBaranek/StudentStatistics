@@ -4,6 +4,8 @@ using System.Windows;
 using System.Windows.Input;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp;
 using StudentStatistics.Commands;
 using StudentStatistics.Models;
 using StudentStatistics.Services;
@@ -16,6 +18,7 @@ namespace StudentStatistics.ViewModels
         private ObservableCollection<Student> _students;
 
         public AppCloser AppCloser { get; private set; }
+        public SolidColorPaint LegendTextColor { get; private set; }
         public ICommand SetTypeTrigger { get; private set; }
         public ICommand GoBackTrigger { get; private set; }
 
@@ -130,6 +133,7 @@ namespace StudentStatistics.ViewModels
             _contentVisibility= Visibility.Hidden;
 
             AppCloser = new AppCloser();
+            LegendTextColor = new SolidColorPaint { Color = new SKColor(255, 179, 0) };
             SetTypeTrigger = new RelayCommand<string>(SetStudentType);
             GoBackTrigger = new RelayCommand(GoBack);
         }
@@ -168,26 +172,26 @@ namespace StudentStatistics.ViewModels
 
             AdmissionTypeSeries = new ISeries[]
             {
-                new PieSeries<int> { Values = new int[] { StudentSorter.StudentsWithoutEntranceExam(ChoosenStudents).Count }, Name = "Študenti prijatí bez prijímacich skúšiek" },
-                new PieSeries<int> { Values = new int[] { StudentSorter.StudentsWithEntranceExam(ChoosenStudents).Count }, Name = "Študenti prijatí po absolvovaní prijímacich skúšiek" }
+                new PieSeries<int> { Values = new int[] { StudentSorter.StudentsWithoutEntranceExam(ChoosenStudents).Count }, Name = "ŠBez prijímacich skúšiek", Fill = new SolidColorPaint(SKColors.GreenYellow) },
+                new PieSeries<int> { Values = new int[] { StudentSorter.StudentsWithEntranceExam(ChoosenStudents).Count }, Name = "S prijímacimi skúškami", Fill = new SolidColorPaint(SKColors.LightBlue) }
             };
 
             NationalityTypeSeries = new ISeries[]
             {
-                new PieSeries<int> { Values = new int[] { StudentSorter.SlovakNationalityStudents(ChoosenStudents).Count }, Name = "Slovenskí študenti" },
-                new PieSeries<int> { Values = new int[] { StudentSorter.OtherNationalityStudents(ChoosenStudents).Count }, Name = "Študenti z iných krajín" }
+                new PieSeries<int> { Values = new int[] { StudentSorter.SlovakNationalityStudents(ChoosenStudents).Count }, Name = "Slovenskí študenti", Fill = new SolidColorPaint(SKColors.White) },
+                new PieSeries<int> { Values = new int[] { StudentSorter.OtherNationalityStudents(ChoosenStudents).Count }, Name = "Študenti z iných krajín", Fill = new SolidColorPaint(SKColors.Black) }
             };
 
             CompetitionParticipationSeries = new ISeries[]
             {
-                new PieSeries<int> { Values = new int[] { StudentSorter.StudentsParticipatedInCompetitions(ChoosenStudents).Count }, Name = "Študenti ktorí sa zapojili do stredoškolských súťaží" },
-                new PieSeries<int> { Values = new int[] { StudentSorter.StudentsNotParticipatedInCompetitions(ChoosenStudents).Count }, Name = "Študenti ktorí sa nezapojili do stredoškolských súťaží" }
+                new PieSeries<int> { Values = new int[] { StudentSorter.StudentsParticipatedInCompetitions(ChoosenStudents).Count }, Name = "Zapojili sa do súťaží", Fill = new SolidColorPaint(SKColors.HotPink) },
+                new PieSeries<int> { Values = new int[] { StudentSorter.StudentsNotParticipatedInCompetitions(ChoosenStudents).Count }, Name = "Nezapojili sa do súťaží", Fill = new SolidColorPaint(SKColors.Yellow) }
             };
 
             MathGraduationSeries = new ISeries[]
             {
-                new PieSeries<int> { Values = new int[] { StudentSorter.MathGraduates(ChoosenStudents).Count }, Name = "Študenti s maturitou z matematiky" },
-                new PieSeries<int> { Values = new int[] { StudentSorter.StudentsWithoutMathGraduation(ChoosenStudents).Count }, Name = "Študenti bez maturity z matematiky" }
+                new PieSeries<int> { Values = new int[] { StudentSorter.MathGraduates(ChoosenStudents).Count }, Name = "S maturitou z matematiky", Fill = new SolidColorPaint(SKColors.DarkOrange) },
+                new PieSeries<int> { Values = new int[] { StudentSorter.StudentsWithoutMathGraduation(ChoosenStudents).Count }, Name = "Bez maturity z matematiky", Fill = new SolidColorPaint(SKColors.YellowGreen) }
             };
         }
 

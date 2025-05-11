@@ -101,11 +101,6 @@
 
             <Grid Grid.Column="1"
                   Visibility="{Binding ContentVisibility}">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                
                 <Grid.Background>
                     <ImageBrush ImageSource="/Images/background.jpg"/>
                 </Grid.Background>
@@ -114,69 +109,78 @@
                        Grid.RowSpan="3"
                        Style="{DynamicResource Logo}"/>
 
-                <StackPanel Grid.Row="0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
-                    <StackPanel Orientation="Vertical"
-                                Margin="80pt 40pt">
-                        <TextBlock Text="Typ strednej školy"
-                                   Style="{DynamicResource GraphHeader}"/>
-                        <lvc:PieChart Series="{Binding SchoolTypeSeries}"
-                                      LegendPosition="Bottom"
-                                      LegendTextSize="15"
-                                      Height="308pt"
-                                      Width="308pt"/>
-                    </StackPanel>
-                    <TextBlock Text="{Binding MainHeaderText}"
-                               Style="{DynamicResource MainHeader}"/>
-                    <StackPanel Orientation="Vertical"
-                                Margin="80pt 40pt">
-                        <TextBlock Text="Typ prijatia"
-                                   Style="{DynamicResource GraphHeader}"/>
-                        <lvc:PieChart Series="{Binding AdmissionTypeSeries}"
-                                      LegendPosition="Bottom"
-                                      LegendTextSize="10"
-                                      Height="308pt"
-                                      Width="308pt"/>
-                    </StackPanel>
-                </StackPanel>
-                <StackPanel Grid.RowSpan="3"
+                <TextBlock Text="{Binding MainHeaderText}"
+                           Style="{DynamicResource MainHeader}"/>
+
+                <StackPanel HorizontalAlignment="Left"
                             Orientation="Vertical"
-                            Margin="30pt 40pt"
+                            Margin="80pt 25pt">
+                    <TextBlock Text="Typ prijatia"
+                               Style="{DynamicResource GraphHeader}"/>
+                    <lvc:PieChart Series="{Binding AdmissionTypeSeries}"
+                                  LegendPosition="Bottom"
+                                  LegendTextSize="15"
+                                  LegendTextPaint="{Binding LegendTextColor}"
+                                  TooltipBackgroundPaint="{Binding LegendTextColor}"
+                                  Height="320pt"
+                                  Width="320pt"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical"
                             VerticalAlignment="Center">
                     <TextBlock Text="Národnosť"
                                Style="{DynamicResource GraphHeader}"/>
                     <lvc:PieChart Series="{Binding NationalityTypeSeries}"
                                   LegendPosition="Bottom"
-                                  LegendTextSize="10"
-                                  Height="370pt"
-                                  Width="370pt"/>
+                                  LegendTextSize="15"
+                                  LegendTextPaint="{Binding LegendTextColor}"
+                                  TooltipBackgroundPaint="{Binding LegendTextColor}"
+                                  Height="320pt"
+                                  Width="320pt"/>
                 </StackPanel>
-                <StackPanel Grid.Row="1"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
-                    <StackPanel Orientation="Vertical"
-                                Margin="245pt 40pt">
-                        <TextBlock Text="Stredoškolské súťaže"
-                                   Style="{DynamicResource GraphHeader}"/>
-                        <lvc:PieChart Series="{Binding CompetitionParticipationSeries}"
-                                      LegendPosition="Bottom"
-                                      LegendTextSize="15"
-                                      Height="350pt"
-                                      Width="350pt"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical"
-                                Margin="270pt 40pt">
-                        <TextBlock Text="Maturita z matematiky"
-                                   Style="{DynamicResource GraphHeader}"/>
-                        <lvc:PieChart Series="{Binding MathGraduationSeries}"
-                                      LegendPosition="Bottom"
-                                      LegendTextSize="10"
-                                      Height="308pt"
-                                      Width="309pt"/>
-                    </StackPanel>
+
+                <StackPanel HorizontalAlignment="Right"
+                            Orientation="Vertical"
+                            Margin="80pt 25pt">
+                    <TextBlock Text="Stredoškolské súťaže"
+                               Style="{DynamicResource GraphHeader}"/>
+                    <lvc:PieChart Series="{Binding CompetitionParticipationSeries}"
+                                  LegendPosition="Bottom"
+                                  LegendTextSize="15"
+                                  LegendTextPaint="{Binding LegendTextColor}"
+                                  TooltipBackgroundPaint="{Binding LegendTextColor}"
+                                  Height="320pt"
+                                  Width="320pt"/>
+                </StackPanel>
+
+                <StackPanel HorizontalAlignment="Left"
+                            VerticalAlignment="Bottom"
+                            Orientation="Vertical"
+                            Margin="200pt 20pt">
+                    <TextBlock Text="Typ strednej školy"
+                               Style="{DynamicResource GraphHeader}"/>
+                    <lvc:PieChart Series="{Binding SchoolTypeSeries}"
+                                  LegendPosition="Bottom"
+                                  LegendTextSize="15"
+                                  LegendTextPaint="{Binding LegendTextColor}"
+                                  TooltipBackgroundPaint="{Binding LegendTextColor}"
+                                  Height="320pt"
+                                  Width="320pt"/>
+                </StackPanel>
+
+                <StackPanel HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            Orientation="Vertical"
+                            Margin="200pt 20pt">
+                    <TextBlock Text="Maturita z matematiky"
+                               Style="{DynamicResource GraphHeader}"/>
+                    <lvc:PieChart Series="{Binding MathGraduationSeries}"
+                                  LegendPosition="Bottom"
+                                  LegendTextSize="15"
+                                  LegendTextPaint="{Binding LegendTextColor}"
+                                  TooltipBackgroundPaint="{Binding LegendTextColor}"
+                                  Height="320pt"
+                                  Width="320pt"/>
                 </StackPanel>
 
             </Grid>
