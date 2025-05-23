@@ -4,11 +4,25 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:StudentStatistics.Views"
+             xmlns:skia="clr-namespace:SkiaSharp;assembly=SkiaSharp"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
              mc:Ignorable="d" 
              d:DesignHeight="1080" d:DesignWidth="1920">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/SuccessRate.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <UserControl.InputBindings>
+        <KeyBinding Command="{Binding DeleteStudentTrigger}" Key="Delete"/>
+        <KeyBinding Command="{Binding EditStudentTrigger}" Key="F2"/>
+    </UserControl.InputBindings>
+    
     <Grid>
-        
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="18*"/>
@@ -24,24 +38,34 @@
             <StackPanel Grid.Row="0"
                         VerticalAlignment="Top"
                         Orientation="Vertical">
-                <Button Style="{DynamicResource PanelButton}"
+                <Button Style="{StaticResource PanelButton}"
                         Command="{Binding NewFileGridTrigger}">
                     <Button.Content>
                         <Image Source="/Images/plus_icon.png"/>
                     </Button.Content>
                     <Button.ToolTip>
-                        Načítať nový súbor
+                        Načítať nové súbory
                     </Button.ToolTip>
                 </Button>
 
-                <Button Style="{DynamicResource PanelButton}"
+                <Button Style="{StaticResource PanelButton}"
+                        Command="{Binding MultipleFilesGridTrigger}">
+                    <Button.Content>
+                        <Image Source="/Images/plus_plus_icon.png"/>
+                    </Button.Content>
+                    <Button.ToolTip>
+                        Načítať nové súbory
+                    </Button.ToolTip>
+                </Button>
+
+                <Button Style="{StaticResource PanelButton}"
                         Visibility="{Binding RemoveFilesVisibility}"
                         Command="{Binding RemoveFilesTrigger}">
                     <Button.Content>
                         <Image Source="/Images/remove_file.png"/>
                     </Button.Content>
                     <Button.ToolTip>
-                        Vymazať načítaný súbor
+                        Vymazať načítané súbory
                     </Button.ToolTip>
                 </Button>
             </StackPanel>
@@ -49,7 +73,7 @@
             <StackPanel Grid.Row="1"
                         VerticalAlignment="Bottom"
                         Orientation="Vertical">
-                <Button Style="{DynamicResource PanelButton}">
+                <Button Style="{StaticResource PanelButton}">
                     <Button.Content>
                         <Image Source="/Images/question_mark.png"
                                Stretch="None">
@@ -60,14 +84,15 @@
                     </Button.Content>
                     <Button.ToolTip>
                         <TextBlock>
-                            Táto aplikácia slúži na analýzu informácii
+                            Aplikácia slúži na analýzu informácii
                             <LineBreak/>
-                            spojených s úspešnosťou študentov
+                            spojených s úspešnosťou prijatých študentov
                         </TextBlock>
                     </Button.ToolTip>
                 </Button>
-                
-                <Button Style="{DynamicResource PanelButton}">
+
+                <Button Style="{StaticResource PanelButton}"
+                        Command="{Binding AppCloser.CloseApplicationTrigger}">
                     <Button.Content>
                         <Image Source="/Images/turn_off.png"
                                Stretch="None">
@@ -89,105 +114,242 @@
                 <ImageBrush ImageSource="/Images/background.jpg"/>
             </Grid.Background>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="6*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            
             <Image Source="/Images/logo.png"
                    Grid.ColumnSpan="2"
                    Grid.RowSpan="2"
-                   Style="{DynamicResource Logo}"/>
+                   Style="{StaticResource Logo}"/>
 
-            <lvc:PieChart Series="{Binding Series}" LegendPosition="Right">
-                
-            </lvc:PieChart>
+            <Grid Visibility="{Binding StatisticsVisibility}">
 
-            <Button Grid.Row="1"
-                    Grid.Column="0"
-                    Style="{DynamicResource NavigationButton}"
-                    Content="Detail"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="6*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <TextBox Grid.Row="0"
-                     Grid.Column="1"
-                     Style="{DynamicResource Searchbar}"
-                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
-                <TextBox.InputBindings>
-                    <KeyBinding Key="Enter" Command="{Binding SearchCommand}"/>
-                </TextBox.InputBindings>
-            </TextBox>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-            <TabControl Grid.Row="0"
+                <lvc:PieChart Series="{Binding StudentSeries}"
+                              LegendPosition="Bottom"
+                              LegendTextSize="25"
+                              LegendTextPaint="{Binding LegendTextColor}"
+                              TooltipBackgroundPaint="{Binding LegendTextColor}"
+                              Height="550pt"/>
+
+                <Button Grid.Row="1"
+                        Grid.Column="0"
+                        Style="{StaticResource NavigationButton}"
+                        Command="{Binding DetailTrigger}"
+                        Content="Detail"/>
+
+                <TabControl Grid.Row="0"
                         Grid.Column="1"
-                        Margin="80pt 70pt 80pt 30pt"
-                        Style="{DynamicResource ModernTabControl}">
-                <TabItem Header="Úspešní študenti">
-                    <Grid Background="{DynamicResource TabBackgroundBrush}">
-                        <ListView ItemsSource="{Binding ActualStudents}"
-                                  Style="{DynamicResource List}">
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="Osobné číslo"
-                                                    DisplayMemberBinding="{Binding PersonalNumber}"
-                                                    Width="100pt"/>
-                                    <GridViewColumn Header="Meno"
-                                                    DisplayMemberBinding="{Binding Name}"
-                                                    Width="100pt"/>
-                                    <GridViewColumn Header="Priezvisko"
-                                                    DisplayMemberBinding="{Binding Surname}"
-                                                    Width="100pt"/>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Neúspešní študenti">
-                    <Grid Background="{DynamicResource TabBackgroundBrush}">
-                        <ListView Style="{DynamicResource List}">
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="Osobné číslo"
-                                                    DisplayMemberBinding="{Binding PersonalNumber}"
-                                                    Width="100pt"/>
-                                    <GridViewColumn Header="Meno"
-                                                    DisplayMemberBinding="{Binding Name}"
-                                                    Width="100pt"/>
-                                    <GridViewColumn Header="Priezvisko"
-                                                    DisplayMemberBinding="{Binding Surname}"
-                                                    Width="100pt"/>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
-                    </Grid>
-                </TabItem>
-            </TabControl>
+                        Margin="40pt 70pt 40pt 30pt"
+                        Style="{StaticResource Tab}">
+                    <TabItem Header="Úspešní študenti"
+                             IsSelected="{Binding SuccessfullStudentsSelected, Mode=TwoWay}">
+                        <Border Style="{StaticResource ListViewBorder}">
+                            <Grid>
+                                <ListView ItemsSource="{Binding SuccessfullStudents}"
+                                          Style="{StaticResource List}">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Osobné číslo"
+                                                            DisplayMemberBinding="{Binding PersonalNumber}"
+                                                            Width="61pt"/>
+                                            <GridViewColumn Header="Meno"
+                                                            DisplayMemberBinding="{Binding Name}"
+                                                            Width="138pt"/>
+                                            <GridViewColumn Header="Priezvisko"
+                                                            DisplayMemberBinding="{Binding Surname}"
+                                                            Width="138pt"/>
+                                            <GridViewColumn Header="Študijná skupina"
+                                                            DisplayMemberBinding="{Binding SemesterResults.StudyGroup}"
+                                                            Width="80pt"/>
+                                            <GridViewColumn Header="Cvičiaci"
+                                                            DisplayMemberBinding="{Binding SemesterResults.Teacher}"
+                                                            Width="180pt"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
+                        </Border>
+                    </TabItem>
+                    <TabItem Header="Neúspešní študenti"
+                             IsSelected="{Binding UnsuccessfullStudentsSelected, Mode=TwoWay}">
+                        <Border Style="{StaticResource ListViewBorder}">
+                            <Grid Background="{StaticResource TabBackgroundBrush}">
+                                <ListView ItemsSource="{Binding UnsuccessfullStudents}"
+                                          Style="{StaticResource List}">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Osobné číslo"
+                                                            DisplayMemberBinding="{Binding PersonalNumber}"
+                                                            Width="61pt"/>
+                                            <GridViewColumn Header="Meno"
+                                                            DisplayMemberBinding="{Binding Name}"
+                                                            Width="138pt"/>
+                                            <GridViewColumn Header="Priezvisko"
+                                                            DisplayMemberBinding="{Binding Surname}"
+                                                            Width="138pt"/>
+                                            <GridViewColumn Header="Študijná skupina"
+                                                            DisplayMemberBinding="{Binding SemesterResults.StudyGroup}"
+                                                            Width="80pt"/>
+                                            <GridViewColumn Header="Cvičiaci"
+                                                            DisplayMemberBinding="{Binding SemesterResults.Teacher}"
+                                                            Width="180pt"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
+                        </Border>
+                    </TabItem>
+                    <TabItem Header="Prvý ročník"
+                             IsSelected="{Binding AllStudentsSelected, Mode=TwoWay}">
+                        <Border Style="{StaticResource ListViewBorder}">
+                            <Grid Background="{StaticResource TabBackgroundBrush}">
+                                <ListView ItemsSource="{Binding Students}"
+                                          Style="{StaticResource List}">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Osobné číslo"
+                                                            DisplayMemberBinding="{Binding PersonalNumber}"
+                                                            Width="61pt"/>
+                                            <GridViewColumn Header="Meno"
+                                                            DisplayMemberBinding="{Binding Name}"
+                                                            Width="138pt"/>
+                                            <GridViewColumn Header="Priezvisko"
+                                                            DisplayMemberBinding="{Binding Surname}"
+                                                            Width="138pt"/>
+                                            <GridViewColumn Header="Študijná skupina"
+                                                            DisplayMemberBinding="{Binding SemesterResults.StudyGroup}"
+                                                            Width="80pt"/>
+                                            <GridViewColumn Header="Cvičiaci"
+                                                            DisplayMemberBinding="{Binding SemesterResults.Teacher}"
+                                                            Width="180pt"/>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </Grid>
+                        </Border>
+                    </TabItem>
+                </TabControl>
 
-            <Button Grid.Row="1"
-                    Grid.Column="1"
-                    Style="{DynamicResource NavigationButton}"
-                    Content="Exportuj"/>
+                <StackPanel Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="385pt 70pt 0 0"
+                            Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource SearchText}"
+                               Text="Vyhľadaj študenta..."/>
+                    <TextBox Style="{StaticResource Searchbar}"
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding SearchTrigger}"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+                </StackPanel>
 
+                <Border Grid.Row="0"
+                        Grid.Column="1"
+                        Visibility="{Binding EditStudentVisibility}"
+                        Style="{StaticResource EditStudent}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="0.5*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch">
+                            <TextBlock Style="{StaticResource EditStudentHeadline}"
+                                       Text="Upraviť študenta"/>
+                            <Button Style="{StaticResource CloseButton}"
+                                    Command="{Binding EditStudentTrigger}"
+                                    Margin="80pt 2pt"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1"
+                                    Orientation="Vertical"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource EditStudentTextBlock}"
+                                       Text="Meno"/>
+                            <TextBox Style="{StaticResource EditStudentTextBox}"
+                                     Text="{Binding StudentToEdit.Name}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="2"
+                                    Orientation="Vertical"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource EditStudentTextBlock}"
+                                       Text="Priezvisko"/>
+                            <TextBox Style="{StaticResource EditStudentTextBox}"
+                                     Text="{Binding StudentToEdit.Surname}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="3"
+                                    Orientation="Vertical"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource EditStudentTextBlock}"
+                                       Text="Osobné číslo"/>
+                            <TextBox Style="{StaticResource EditStudentTextBox}"
+                                     Text="{Binding StudentToEdit.PersonalNumber}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="4"
+                                    Orientation="Vertical"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource EditStudentTextBlock}"
+                                       Text="Študijná skupina"/>
+                            <TextBox Style="{StaticResource EditStudentTextBox}"
+                                     Text="{Binding StudentToEdit.SemesterResults.StudyGroup}"/>
+                        </StackPanel>
+                        <Button Grid.Row="6"
+                                Content="Potvrdiť"
+                                Style="{StaticResource EditStudentButton}"/>
+                    </Grid>
+                </Border>
+
+                <Button Grid.Row="1"
+                        Grid.Column="1"
+                        Style="{StaticResource NavigationButton}"
+                        Content="Exportuj"/>
+            </Grid>
         </Grid>
 
         <Border Grid.Column="2"
-                Style="{DynamicResource NewFileGrid}"
+                Style="{StaticResource NewFileGrid}"
                 Visibility="{Binding NewFileGridVisibility}">
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal"
                             VerticalAlignment="Top"
                             HorizontalAlignment="Stretch">
                     <TextBlock Text="Vyberte požadované súbory"
-                               Style="{DynamicResource NewFileTitle}"/>
-                    <Button Style="{DynamicResource CloseButton}"
-                            Command="{Binding NewFileGridTrigger}"/>
+                               Style="{StaticResource NewFileTitle}"/>
+                    <Button Style="{StaticResource CloseButton}"
+                            Command="{Binding NewFileGridTrigger}"
+                            Margin="150pt 5pt"/>
                 </StackPanel>
-                
-                
+
+                <TextBlock Style="{StaticResource WrongFileText}"
+                           Visibility="{Binding WrongFileVisibility}">
+                    Súbor sa nepodarilo otvoriť pretože
+                    <LineBreak/>
+                    bol použitý nesprávny typ alebo formát
+                    <LineBreak/>
+                    jedného zo zúborov alebo bol už otvorený
+                    <LineBreak/>
+                    mimo aplikácie
+                </TextBlock>
+
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
@@ -196,28 +358,72 @@
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center">
                         <StackPanel>
-                            <Button Content="Načítaj semester"
-                                    Style="{DynamicResource NewFileButton}"
+                            <Button Content="Načítať semester"
+                                    Style="{StaticResource NewFileButton}"
                                     Command="{Binding OpenFileCommand}"
                                     CommandParameter="semester"
                                     Visibility="{Binding SemesterButtonVisibility}"/>
                             <Image Source="/Images/checkmark.png"
-                                   Style="{DynamicResource Checkmark}"
+                                   Style="{StaticResource Checkmark}"
                                    Visibility="{Binding CheckmarkSemesterFileVisibility}"/>
+                            <Button Style="{StaticResource RemoveFileButton}"
+                                    Command="{Binding RemoveFileTrigger}"
+                                    CommandParameter="semester"
+                                    Visibility="{Binding RemoveSemesterFileVisibility}"/>
                         </StackPanel>
                         <StackPanel>
-                            <Button Content="Načítaj prijímačky"
-                                    Style="{DynamicResource NewFileButton}"
+                            <Button Content="Načítať prijímačky"
+                                    Style="{StaticResource NewFileButton}"
                                     Command="{Binding OpenFileCommand}"
                                     CommandParameter="admission"
                                     Visibility="{Binding AdmissionButtonVisibility}"/>
                             <Image Source="/Images/checkmark.png"
-                                   Style="{DynamicResource Checkmark}"
+                                   Style="{StaticResource Checkmark}"
                                    Visibility="{Binding CheckmarkAdmissionFileVisibility}"/>
+                            <Button Style="{StaticResource RemoveFileButton}"
+                                    Command="{Binding RemoveFileTrigger}"
+                                    CommandParameter="admission"
+                                    Visibility="{Binding RemoveAdmissionFileVisibility}"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
+                <Button Content="Potvrdiť"
+                        Style="{StaticResource Confirmbutton}"
+                        Visibility="{Binding ConfirmFilesVisibility}"
+                        Command="{Binding ConfirmFileOpenTrigger}"/>
             </StackPanel>
+        </Border>
+
+        <Border Grid.Column="2"
+                Style="{StaticResource TeacherWindow}"
+                Visibility="{Binding TeacherWindowVisibility}">
+            <Grid>
+                <TextBlock Text="Vyberte učitela"
+                           Style="{StaticResource NewFileTitle}"
+                           VerticalAlignment="Top"
+                           HorizontalAlignment="Stretch"/>
+                <StackPanel Orientation="Vertical"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Margin="0 20pt 0 0">
+                    <Button Content="doc. PeaDr. Dalibor Gonda PhD."
+                            Style="{StaticResource TeacherButton}"
+                            Command="{Binding SelectTeacherTrigger}"
+                            CommandParameter="doc. PeaDr. Dalibor Gonda PhD."/>
+                    <Button Content="RNDr. Ida Stankovianska CSc."
+                            Style="{StaticResource TeacherButton}"
+                            Command="{Binding SelectTeacherTrigger}"
+                            CommandParameter="RNDr. Ida Stankovianska CSc."/>
+                    <Button Content="Ing. Milan Straka PhD."
+                            Style="{StaticResource TeacherButton}"
+                            Command="{Binding SelectTeacherTrigger}"
+                            CommandParameter="Ing. Milan Straka PhD."/>
+                    <Button Content="Ing. Maroš Janovec PhD."
+                            Style="{StaticResource TeacherButton}"
+                            Command="{Binding SelectTeacherTrigger}"
+                            CommandParameter="Ing. Maroš Janovec PhD."/>
+                </StackPanel>
+            </Grid>
         </Border>
         
     </Grid>

@@ -10,8 +10,6 @@ namespace StudentStatistics.Views
         {
             InitializeComponent();
 
-            ResourceHandler.LoadResource("SuccessRate");
-
             DataContext = new SuccessRateViewModel(router);
         }
     }

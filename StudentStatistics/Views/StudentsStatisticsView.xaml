@@ -1,0 +1,328 @@
+﻿<UserControl x:Class="StudentStatistics.Views.StudentsStatisticsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:StudentStatistics.Views"
+             xmlns:skia="clr-namespace:SkiaSharp;assembly=SkiaSharp"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+             mc:Ignorable="d" 
+             d:DesignHeight="1080" d:DesignWidth="1920">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/StudentsStatistics.xaml"/>
+                <ResourceDictionary Source="../Resources/SuccessRate.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="18*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0"
+                  Background="#FFB300">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Orientation="Vertical"
+                            VerticalAlignment="Top">
+                    <Button Style="{StaticResource PanelButton}"
+                            Command="{Binding GoBackTrigger}">
+                        <Button.Content>
+                            <Image Source="/Images/back.png"
+                                   Stretch="None">
+                                <Image.LayoutTransform>
+                                    <ScaleTransform ScaleX="0.3" ScaleY="0.3" />
+                                </Image.LayoutTransform>
+                            </Image>
+                        </Button.Content>
+                        <Button.ToolTip>
+                            Naspäť k štatistike úspešnosti
+                        </Button.ToolTip>
+                    </Button>
+                    <Grid>
+                        <Button Style="{StaticResource PanelButton}"
+                                Command="{Binding NextPageTrigger}"                   
+                                Visibility="{Binding NextPageButtonVisibility}">
+                            <Button.Content>
+                                <Image Source="/Images/next_page.png"
+                                       Stretch="None">
+                                    <Image.LayoutTransform>
+                                        <ScaleTransform ScaleX="0.3" ScaleY="0.3" />
+                                    </Image.LayoutTransform>
+                                </Image>
+                            </Button.Content>
+                            <Button.ToolTip>
+                                Ďalšia strana
+                            </Button.ToolTip>
+                        </Button>
+                        <Button Style="{StaticResource PanelButton}"
+                                Command="{Binding PreviousPageTrigger}"
+                                Visibility="{Binding PreviousPageButtonVisibility}">
+                            <Button.Content>
+                                <Image Source="/Images/previous_page.png"
+                                       Stretch="None">
+                                    <Image.LayoutTransform>
+                                        <ScaleTransform ScaleX="0.3" ScaleY="0.3" />
+                                    </Image.LayoutTransform>
+                                </Image>
+                            </Button.Content>
+                            <Button.ToolTip>
+                                Predchádzajúca strana
+                            </Button.ToolTip>
+                        </Button>
+                    </Grid>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1"
+                            VerticalAlignment="Bottom"
+                            Orientation="Vertical">
+                    <Button Style="{StaticResource PanelButton}">
+                        <Button.Content>
+                            <Image Source="/Images/question_mark.png"
+                                   Stretch="None">
+                                <Image.LayoutTransform>
+                                    <ScaleTransform ScaleX="0.05" ScaleY="0.05" />
+                                </Image.LayoutTransform>
+                            </Image>
+                        </Button.Content>
+                        <Button.ToolTip>
+                            <TextBlock>
+                            Táto aplikácia slúži na analýzu informácii
+                        <LineBreak/>
+                            spojených s úspešnosťou študentov
+                            </TextBlock>
+                        </Button.ToolTip>
+                    </Button>
+
+                    <Button Style="{StaticResource PanelButton}"
+                            Command="{Binding AppCloser.CloseApplicationTrigger}">
+                        <Button.Content>
+                            <Image Source="/Images/turn_off.png"
+                                   Stretch="None">
+                                <Image.LayoutTransform>
+                                    <ScaleTransform ScaleX="0.15" ScaleY="0.15" />
+                                </Image.LayoutTransform>
+                            </Image>
+                        </Button.Content>
+                        <Button.ToolTip>
+                            Odísť z aplikácie
+                        </Button.ToolTip>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Column="1"
+                  Visibility="{Binding TypeDecisionVisbility}">
+                <Grid.Background>
+                    <ImageBrush ImageSource="/Images/background.jpg"/>
+                </Grid.Background>
+                
+                <Image Source="/Images/logo.png"
+                       Style="{StaticResource Logo}"/>
+                
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                    <Button Content="Úspešní študenti"
+                            Style="{StaticResource DecisionButtonSuccessful}"
+                            Command="{Binding SetTypeTrigger}"
+                            CommandParameter="successful"/>
+                    <Button Content="Neúspešní študenti"
+                            Style="{StaticResource DecisionButtonUnsuccessful}"
+                            Command="{Binding SetTypeTrigger}"
+                            CommandParameter="unsuccessful"/>
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Column="1"
+                  Visibility="{Binding FirstPageVisibility}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid.Background>
+                    <ImageBrush ImageSource="/Images/background.jpg"/>
+                </Grid.Background>
+
+                <Image Grid.RowSpan="2"
+                       Grid.ColumnSpan="2"
+                       Source="/Images/logo.png"
+                       Style="{StaticResource Logo}"/>
+
+                <TextBlock Grid.Row="0"
+                           Grid.ColumnSpan="2"
+                           Text="{Binding MainHeaderText}"
+                           Style="{StaticResource MainHeader}"/>
+
+                <StackPanel Grid.Row="0"
+                            Grid.Column="0"
+                            Orientation="Vertical"
+                            Margin="0 25pt 100pt 0">
+                    <TextBlock Text="Typ prijatia"
+                               Style="{StaticResource GraphHeader}"/>
+                    <lvc:PieChart Series="{Binding AdmissionTypeSeries}"
+                                  LegendPosition="Bottom"
+                                  LegendTextSize="15"
+                                  LegendTextPaint="{Binding LegendTextColor}"
+                                  TooltipBackgroundPaint="{Binding LegendTextColor}"
+                                  Height="320pt"
+                                  Width="320pt"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0"
+                            Grid.Column="1"
+                            Orientation="Vertical"
+                            Margin="100pt 25pt 0 0">
+                    <TextBlock Text="Stredoškolské súťaže"
+                               Style="{StaticResource GraphHeader}"/>
+                    <lvc:PieChart Series="{Binding CompetitionParticipationSeries}"
+                                  LegendPosition="Bottom"
+                                  LegendTextSize="15"
+                                  LegendTextPaint="{Binding LegendTextColor}"
+                                  TooltipBackgroundPaint="{Binding LegendTextColor}"
+                                  Height="320pt"
+                                  Width="320pt"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1"
+                            Grid.Column="0"
+                            VerticalAlignment="Top"
+                            Orientation="Vertical"
+                            Margin="100pt 10pt 0 0">
+                    <TextBlock Text="Typ strednej školy"
+                               Style="{StaticResource GraphHeader}"/>
+                    <lvc:PieChart Series="{Binding SchoolTypeSeries}"
+                                  LegendPosition="Bottom"
+                                  LegendTextSize="15"
+                                  LegendTextPaint="{Binding LegendTextColor}"
+                                  TooltipBackgroundPaint="{Binding LegendTextColor}"
+                                  Height="320pt"
+                                  Width="320pt"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1"
+                            Grid.Column="1"
+                            VerticalAlignment="Top"
+                            Orientation="Vertical"
+                            Margin="0 10pt 100pt 0">
+                    <TextBlock Text="Maturita z matematiky"
+                               Style="{StaticResource GraphHeader}"/>
+                    <lvc:PieChart Series="{Binding MathGraduationSeries}"
+                                  LegendPosition="Bottom"
+                                  LegendTextSize="15"
+                                  LegendTextPaint="{Binding LegendTextColor}"
+                                  TooltipBackgroundPaint="{Binding LegendTextColor}"
+                                  Height="320pt"
+                                  Width="320pt"/>
+                </StackPanel>
+
+            </Grid>
+
+            <Grid Grid.Column="1"
+                  Visibility="{Binding SecondPageVisibility}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid.Background>
+                    <ImageBrush ImageSource="/Images/background.jpg"/>
+                </Grid.Background>
+
+                <Image Grid.RowSpan="2"
+                       Grid.ColumnSpan="2"
+                       Source="/Images/logo.png"
+                       Style="{StaticResource Logo}"/>
+
+                <TextBlock Grid.Row="0"
+                           Grid.ColumnSpan="2"
+                           Text="{Binding MainHeaderText}"
+                           Style="{StaticResource MainHeader}"/>
+                
+                <StackPanel Grid.Row="0"
+                            Grid.Column="0"
+                            Orientation="Vertical"
+                            VerticalAlignment="Center"
+                            Margin="0 25pt 100pt 0">
+                    <TextBlock Text="Národnosť"
+                               Style="{StaticResource GraphHeader}"/>
+                    <lvc:PieChart Series="{Binding NationalityTypeSeries}"
+                                  LegendPosition="Bottom"
+                                  LegendTextSize="15"
+                                  LegendTextPaint="{Binding LegendTextColor}"
+                                  TooltipBackgroundPaint="{Binding LegendTextColor}"
+                                  Height="320pt"
+                                  Width="320pt"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0"
+                            Grid.Column="1"
+                            Orientation="Vertical"
+                            VerticalAlignment="Center"
+                            Margin="100pt 25pt 0 0">
+                    <TextBlock Text="Dochádzka"
+                               Style="{StaticResource GraphHeader}"/>
+                    <lvc:PieChart Series="{Binding AttendanceSeries}"
+                                  LegendPosition="Bottom"
+                                  LegendTextSize="15"
+                                  LegendTextPaint="{Binding LegendTextColor}"
+                                  TooltipBackgroundPaint="{Binding LegendTextColor}"
+                                  Height="320pt"
+                                  Width="320pt"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1"
+                            Grid.Column="0"
+                            Orientation="Vertical"
+                            VerticalAlignment="Top"
+                            Margin="100pt 10pt 0 0">
+                    <TextBlock Text="Učitelia študentov"
+                               Style="{StaticResource GraphHeader}"/>
+                    <lvc:PieChart Series="{Binding TeachersSeries}"
+                                  LegendPosition="Bottom"
+                                  LegendTextSize="15"
+                                  LegendTextPaint="{Binding LegendTextColor}"
+                                  TooltipBackgroundPaint="{Binding LegendTextColor}"
+                                  Height="320pt"
+                                  Width="320pt"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1"
+                            Grid.Column="1"
+                            Orientation="Vertical"
+                            VerticalAlignment="Top"
+                            Margin="0 10pt 100pt 0">
+                    <TextBlock Text="Úspešnosť počas semestra"
+                               Style="{StaticResource GraphHeader}"/>
+                    <lvc:PieChart Series="{Binding SemesterSuccessSeries}"
+                                  LegendPosition="Bottom"
+                                  LegendTextSize="15"
+                                  LegendTextPaint="{Binding LegendTextColor}"
+                                  TooltipBackgroundPaint="{Binding LegendTextColor}"
+                                  Height="320pt"
+                                  Width="320pt"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
