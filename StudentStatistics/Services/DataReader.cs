@@ -8,21 +8,13 @@ namespace StudentStatistics.Services
 {
     public static class DataReader
     {
-        public static ObservableCollection<Student>? ReadData(string semesterFilePath, string admissionFilePath, string teacherName)
+        public static ObservableCollection<Student>? ReadAdmissionFile(string admissionFilePath)
         {
             var students = new ObservableCollection<Student>();
 
             try
             {
                 ReadAdmissionFile(admissionFilePath, students);
-
-                using (var excelFile = new XLWorkbook(semesterFilePath))
-                {
-                    foreach (var sheet in excelFile.Worksheets)
-                    {
-                        ReadSemesterSheet(sheet, teacherName, students);
-                    }
-                };
             }
             catch (Exception)
             {
@@ -30,6 +22,36 @@ namespace StudentStatistics.Services
             }
 
             return students;
+        }
+
+        public static void ReadSemesterFile(string semesterFilePath, string teacher, ObservableCollection<Student> students)
+        {
+            using (var excelFile = new XLWorkbook(semesterFilePath))
+            {
+                foreach (var sheet in excelFile.Worksheets)
+                {
+                    string studyGroup = sheet.Row(1).Cell(3).GetValue<string>();
+
+                    foreach (var row in sheet.RowsUsed())
+                    {
+                        if (row.Cell(3).IsEmpty())
+                        {
+                            break;
+                        }
+
+                        if (row.RowNumber() > 1)
+                        {
+                            string name = "";
+                            string surname = "";
+
+                            SemesterResults semesterResults = GetSemesterResults(ref name, ref surname, teacher, studyGroup, row);
+
+                            Student student = FindStudent(name, surname, students);
+                            student.SemesterResults = semesterResults;
+                        }
+                    }
+                }
+            };
         }
 
         private static void ReadAdmissionFile(string filePath, ObservableCollection<Student> students)
@@ -49,30 +71,6 @@ namespace StudentStatistics.Services
                 string nationality = data[5];
 
                 students.Add(new Student(name, surname, gender, personalNumber, studyProgram, nationality, GetAdmissionProcess(data)));
-            }
-        }
-
-        private static void ReadSemesterSheet(IXLWorksheet sheet, string teacher, ObservableCollection<Student> students)
-        {
-            string studyGroup = sheet.Row(1).Cell(3).GetValue<string>();
-
-            foreach (var row in sheet.RowsUsed())
-            {
-                if (row.Cell(3).IsEmpty())
-                {
-                    break;
-                }
-
-                if (row.RowNumber() > 1)
-                {
-                    string name = "";
-                    string surname = "";
-
-                    SemesterResults semesterResults = GetSemesterResults(ref name, ref surname, teacher, studyGroup, row);
-
-                    Student student = FindStudent(name, surname, students);
-                    student.SemesterResults = semesterResults;
-                }
             }
         }
 

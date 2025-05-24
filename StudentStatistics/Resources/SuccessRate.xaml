@@ -116,7 +116,7 @@
         <Setter Property="BorderThickness" Value="0.5"/>
         <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
     </Style>
-    
+
     <Style TargetType="GridViewColumnHeader">
         <Setter Property="Background" Value="{StaticResource ControlBrush}"/>
         <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
@@ -148,7 +148,7 @@
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="FontSize" Value="12pt"/>
         <Setter Property="FontWeight" Value="Light"/>
-        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
@@ -209,7 +209,7 @@
 
     <!-- New file buttons -->
     <Style x:Key="NewFileButton" TargetType="Button">
-        <Setter Property="Margin" Value="18pt 35pt"/>
+        <Setter Property="Margin" Value="10pt 50pt 15pt 10pt"/>
         <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
         <Setter Property="Foreground" Value="{StaticResource ControlBrush}"/>
         <Setter Property="FontWeight" Value="Bold"/>
@@ -235,7 +235,8 @@
     
     <!-- New file confirm button -->
     <Style x:Key="Confirmbutton" TargetType="Button">
-        <Setter Property="Margin" Value="-10pt"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Margin" Value="10pt"/>
         <Setter Property="Background" Value="Green"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="FontWeight" Value="Bold"/>
@@ -305,7 +306,7 @@
     
     <!-- Checkmark -->
     <Style x:Key="Checkmark" TargetType="Image">
-        <Setter Property="Margin" Value="0 -20pt"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Width" Value="100pt"/>
         <Setter Property="Height" Value="100pt"/>
         <Setter Property="Margin" Value="10pt"/>
@@ -412,8 +413,8 @@
     <Style x:Key="EditStudent" TargetType="Border">
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="Height" Value="330pt"/>
-        <Setter Property="Width" Value="250pt"/>
+        <Setter Property="Height" Value="390pt"/>
+        <Setter Property="Width" Value="320pt"/>
         <Setter Property="Background" Value="#222"/>
         <Setter Property="BorderThickness" Value="0.5pt"/>
         <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
@@ -443,7 +444,7 @@
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Top"/>
         <Setter Property="Margin" Value="0 0 0 1pt"/>
-        <Setter Property="Width" Value="200pt"/>
+        <Setter Property="Width" Value="290pt"/>
         <Setter Property="Height" Value="30pt"/>
         <Setter Property="FontSize" Value="20pt"/>
         <Setter Property="Foreground" Value="LightGoldenrodYellow"/>

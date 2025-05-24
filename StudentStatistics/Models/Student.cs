@@ -4,7 +4,7 @@ namespace StudentStatistics.Models
 {
     public class Student : INotifyPropertyChanged
     {
-        
+        public string FullName => $"{Name} {Surname}";
         public string Gender { get; private set; }
         public string Nationality { get; private set; }
         public AdmissionProcess AdmissionProcess { get; private set; }

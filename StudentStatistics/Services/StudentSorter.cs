@@ -145,7 +145,7 @@ namespace StudentStatistics.Services
             return new ObservableCollection<Student>(studentsStoppedComing);
         }
 
-        private static bool StoppedComing(Student student)
+        public static bool StoppedComing(Student student)
         {
             if (student.SemesterResults != null)
             {
@@ -153,7 +153,7 @@ namespace StudentStatistics.Services
 
                 for (int i = 12; i >= 0; --i)
                 {
-                    if (student.SemesterResults.Attendance[i])
+                    if (!student.SemesterResults.Attendance[i])
                     {
                         ++absent;
                     }

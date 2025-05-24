@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:StudentStatistics.Views"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:skia="clr-namespace:SkiaSharp;assembly=SkiaSharp"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
              mc:Ignorable="d" 
@@ -49,7 +50,7 @@
                 </Button>
 
                 <Button Style="{StaticResource PanelButton}"
-                        Command="{Binding MultipleFilesGridTrigger}">
+                        Command="{Binding NewMultipleFilesTrigger}">
                     <Button.Content>
                         <Image Source="/Images/plus_plus_icon.png"/>
                     </Button.Content>
@@ -154,6 +155,11 @@
                             <Grid>
                                 <ListView ItemsSource="{Binding SuccessfullStudents}"
                                           Style="{StaticResource List}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="MouseDoubleClick">
+                                            <i:InvokeCommandAction Command="{Binding NavigateToStudentInfoTrigger}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
                                     <ListView.View>
                                         <GridView>
                                             <GridViewColumn Header="Osobné číslo"
@@ -183,6 +189,11 @@
                             <Grid Background="{StaticResource TabBackgroundBrush}">
                                 <ListView ItemsSource="{Binding UnsuccessfullStudents}"
                                           Style="{StaticResource List}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="MouseDoubleClick">
+                                            <i:InvokeCommandAction Command="{Binding NavigateToStudentInfoTrigger}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
                                     <ListView.View>
                                         <GridView>
                                             <GridViewColumn Header="Osobné číslo"
@@ -212,6 +223,11 @@
                             <Grid Background="{StaticResource TabBackgroundBrush}">
                                 <ListView ItemsSource="{Binding Students}"
                                           Style="{StaticResource List}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="MouseDoubleClick">
+                                            <i:InvokeCommandAction Command="{Binding NavigateToStudentInfoTrigger}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
                                     <ListView.View>
                                         <GridView>
                                             <GridViewColumn Header="Osobné číslo"
@@ -260,6 +276,8 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
+
+                            <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="0.5*"/>
@@ -274,7 +292,7 @@
                                        Text="Upraviť študenta"/>
                             <Button Style="{StaticResource CloseButton}"
                                     Command="{Binding EditStudentTrigger}"
-                                    Margin="80pt 2pt"/>
+                                    Margin="200pt 2pt"/>
                         </StackPanel>
                         <StackPanel Grid.Row="1"
                                     Orientation="Vertical"
@@ -312,8 +330,18 @@
                             <TextBox Style="{StaticResource EditStudentTextBox}"
                                      Text="{Binding StudentToEdit.SemesterResults.StudyGroup}"/>
                         </StackPanel>
-                        <Button Grid.Row="6"
+                        <StackPanel Grid.Row="5"
+                                    Orientation="Vertical"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource EditStudentTextBlock}"
+                                       Text="Cvičiaci"/>
+                            <TextBox Style="{StaticResource EditStudentTextBox}"
+                                     Text="{Binding StudentToEdit.SemesterResults.Teacher}"/>
+                        </StackPanel>
+                        <Button Grid.Row="7"
                                 Content="Potvrdiť"
+                                Command="{Binding ConfirmEditStudentTrigger}"
                                 Style="{StaticResource EditStudentButton}"/>
                     </Grid>
                 </Border>
@@ -354,10 +382,18 @@
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Margin="20pt">
-                    <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center">
-                        <StackPanel>
+                    <Grid HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <StackPanel Grid.Column="0">
                             <Button Content="Načítať semester"
                                     Style="{StaticResource NewFileButton}"
                                     Command="{Binding OpenFileCommand}"
@@ -371,7 +407,7 @@
                                     CommandParameter="semester"
                                     Visibility="{Binding RemoveSemesterFileVisibility}"/>
                         </StackPanel>
-                        <StackPanel>
+                        <StackPanel Grid.Column="1">
                             <Button Content="Načítať prijímačky"
                                     Style="{StaticResource NewFileButton}"
                                     Command="{Binding OpenFileCommand}"
@@ -385,12 +421,14 @@
                                     CommandParameter="admission"
                                     Visibility="{Binding RemoveAdmissionFileVisibility}"/>
                         </StackPanel>
-                    </StackPanel>
+                        <Button Grid.Row="1"
+                                Grid.ColumnSpan="2"
+                                Content="Potvrdiť"
+                                Style="{StaticResource Confirmbutton}"
+                                Visibility="{Binding ConfirmFilesVisibility}"
+                                Command="{Binding ConfirmFileOpenTrigger}"/>
+                    </Grid>
                 </StackPanel>
-                <Button Content="Potvrdiť"
-                        Style="{StaticResource Confirmbutton}"
-                        Visibility="{Binding ConfirmFilesVisibility}"
-                        Command="{Binding ConfirmFileOpenTrigger}"/>
             </StackPanel>
         </Border>
 

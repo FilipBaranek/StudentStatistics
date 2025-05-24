@@ -1,8 +1,9 @@
-﻿namespace StudentStatistics.Models
+﻿using System.ComponentModel;
+
+namespace StudentStatistics.Models
 {
-    public class SemesterResults
+    public class SemesterResults : INotifyPropertyChanged
     {
-        public string StudyGroup { get; private set; }
         public double FirstTest { get; private set; }
         public double SecondTest { get; private set; }
         public double? WrittenTestForm { get; private set; }
@@ -12,17 +13,41 @@
         public double MissingPoints { get; private set; }
         public double TotalPoints { get; private set; }
         public char Grade { get; private set; }
-        public string Teacher { get; private set; }
         public double ActivitiesSum { get; private set; }
         public double[] Activities { get; private set; }
         public bool[] Attendance { get; private set; }
+
+        private string _studyGroup;
+        public string StudyGroup
+        {
+            get => _studyGroup;
+            set
+            {
+                _studyGroup = value;
+                OnPropertyChanged(nameof(StudyGroup));
+            }
+        }
+
+        private string _teacher;
+        public string Teacher
+        {
+            get => _teacher;
+            set
+            {
+                _teacher = value;
+                OnPropertyChanged(nameof(Teacher));
+            }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public SemesterResults(
             string studyGroup, double firstTest, double secondTest, double? writtenTestForm, double? oralTestForm, double testSum, double semesterSum,
             double missingPoints, double totalPointsm, char grade, string teacher, double activitiesSum, double[] activities, bool[] attendance
         )
         {
-            StudyGroup = studyGroup;
+            _studyGroup = studyGroup;
+            _teacher = teacher;
             FirstTest = firstTest;
             SecondTest = secondTest;
             WrittenTestForm = writtenTestForm;
@@ -32,10 +57,14 @@
             MissingPoints = missingPoints;
             TotalPoints = totalPointsm;
             Grade = grade;
-            Teacher = teacher;
             ActivitiesSum = activitiesSum;
             Activities = activities;
             Attendance = attendance;
+        }
+
+        public void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
     }
