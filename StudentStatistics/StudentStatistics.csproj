@@ -12,6 +12,7 @@
     <None Remove="Images\back.png" />
     <None Remove="Images\background.jpg" />
     <None Remove="Images\checkmark.png" />
+    <None Remove="Images\icon.ico" />
     <None Remove="Images\list.png" />
     <None Remove="Images\logo.png" />
     <None Remove="Images\next_page.png" />
@@ -38,6 +39,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\checkmark.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\icon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\list.png">

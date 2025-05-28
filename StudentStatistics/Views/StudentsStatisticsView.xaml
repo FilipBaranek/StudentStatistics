@@ -6,8 +6,7 @@
              xmlns:local="clr-namespace:StudentStatistics.Views"
              xmlns:skia="clr-namespace:SkiaSharp;assembly=SkiaSharp"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
-             mc:Ignorable="d" 
-             d:DesignHeight="1080" d:DesignWidth="1920">
+             mc:Ignorable="d">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -40,7 +39,7 @@
                             <Image Source="/Images/back.png"
                                    Stretch="None">
                                 <Image.LayoutTransform>
-                                    <ScaleTransform ScaleX="0.3" ScaleY="0.3" />
+                                    <ScaleTransform ScaleX="0.26" ScaleY="0.26" />
                                 </Image.LayoutTransform>
                             </Image>
                         </Button.Content>
@@ -90,7 +89,7 @@
                             <Image Source="/Images/question_mark.png"
                                    Stretch="None">
                                 <Image.LayoutTransform>
-                                    <ScaleTransform ScaleX="0.05" ScaleY="0.05" />
+                                    <ScaleTransform ScaleX="0.045" ScaleY="0.045" />
                                 </Image.LayoutTransform>
                             </Image>
                         </Button.Content>
@@ -109,7 +108,7 @@
                             <Image Source="/Images/turn_off.png"
                                    Stretch="None">
                                 <Image.LayoutTransform>
-                                    <ScaleTransform ScaleX="0.15" ScaleY="0.15" />
+                                    <ScaleTransform ScaleX="0.24" ScaleY="0.24" />
                                 </Image.LayoutTransform>
                             </Image>
                         </Button.Content>
@@ -220,9 +219,9 @@
                             VerticalAlignment="Top"
                             Orientation="Vertical"
                             Margin="0 10pt 100pt 0">
-                    <TextBlock Text="Maturita z matematiky"
+                    <TextBlock Text="{Binding SemesterResultsHeadline}"
                                Style="{StaticResource GraphHeader}"/>
-                    <lvc:PieChart Series="{Binding MathGraduationSeries}"
+                    <lvc:PieChart Series="{Binding SemesterResultsSeries}"
                                   LegendPosition="Bottom"
                                   LegendTextSize="15"
                                   LegendTextPaint="{Binding LegendTextColor}"
@@ -312,9 +311,9 @@
                             Orientation="Vertical"
                             VerticalAlignment="Top"
                             Margin="0 10pt 100pt 0">
-                    <TextBlock Text="Úspešnosť počas semestra"
+                    <TextBlock Text="Maturita z matematiky"
                                Style="{StaticResource GraphHeader}"/>
-                    <lvc:PieChart Series="{Binding SemesterSuccessSeries}"
+                    <lvc:PieChart Series="{Binding MathGraduationSeries}"
                                   LegendPosition="Bottom"
                                   LegendTextSize="15"
                                   LegendTextPaint="{Binding LegendTextColor}"

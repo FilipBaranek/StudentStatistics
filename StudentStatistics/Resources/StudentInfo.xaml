@@ -20,7 +20,7 @@
         <Setter Property="Margin" Value="20pt 10pt 0 0"/>
         <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
         <Setter Property="FontWeight" Value="UltraBold"/>
-        <Setter Property="FontSize" Value="50pt"/>
+        <Setter Property="FontSize" Value="45pt"/>
     </Style>
     
     <!-- Info text -->

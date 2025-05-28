@@ -7,8 +7,7 @@
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:skia="clr-namespace:SkiaSharp;assembly=SkiaSharp"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
-             mc:Ignorable="d" 
-             d:DesignHeight="1080" d:DesignWidth="1920">
+             mc:Ignorable="d">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -79,7 +78,7 @@
                         <Image Source="/Images/question_mark.png"
                                Stretch="None">
                             <Image.LayoutTransform>
-                                <ScaleTransform ScaleX="0.05" ScaleY="0.05" />
+                                <ScaleTransform ScaleX="0.045" ScaleY="0.045" />
                             </Image.LayoutTransform>
                         </Image>
                     </Button.Content>
@@ -98,7 +97,7 @@
                         <Image Source="/Images/turn_off.png"
                                Stretch="None">
                             <Image.LayoutTransform>
-                                <ScaleTransform ScaleX="0.15" ScaleY="0.15" />
+                                <ScaleTransform ScaleX="0.24" ScaleY="0.24" />
                             </Image.LayoutTransform>
                         </Image>
                     </Button.Content>
@@ -255,7 +254,8 @@
 
                 <StackPanel Grid.Row="0"
                             Grid.Column="1"
-                            Margin="385pt 70pt 0 0"
+                            HorizontalAlignment="Right"
+                            Margin="0 70pt 40pt 0"
                             Orientation="Horizontal">
                     <TextBlock Style="{StaticResource SearchText}"
                                Text="Vyhľadaj študenta..."/>
@@ -349,6 +349,7 @@
                 <Button Grid.Row="1"
                         Grid.Column="1"
                         Style="{StaticResource NavigationButton}"
+                        Command="{Binding ExportToCSVCommand}"
                         Content="Exportuj"/>
             </Grid>
         </Grid>

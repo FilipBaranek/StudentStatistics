@@ -40,18 +40,11 @@ namespace StudentStatistics.Services
             return new ObservableCollection<Student>(unsuccessfullStudents);
         }
 
-        public static ObservableCollection<Student> GrammarSchoolStudents(ObservableCollection<Student> students)
+        public static ObservableCollection<Student> HasSchoolTypeStudents(string schoolType, ObservableCollection<Student> students)
         {
-            var gramarSchoolStudents = students.Where(x => (x.AdmissionProcess.HighSchoolType.Equals("gymnázium")));
+            var wantedSchoolTypeStudents = students.Where(x => (x.AdmissionProcess._highSchoolType.Equals(schoolType)));
 
-            return new ObservableCollection<Student>(gramarSchoolStudents);
-        }
-
-        public static ObservableCollection<Student> VocationalSchoolStudents(ObservableCollection<Student> students)
-        {
-            var vocationalSchoolStudents = students.Where(x => (!x.AdmissionProcess.HighSchoolType.Equals("gymnázium")));
-
-            return new ObservableCollection<Student>(vocationalSchoolStudents);
+            return new ObservableCollection<Student>(wantedSchoolTypeStudents);
         }
 
         public static ObservableCollection<Student> StudentsWithoutEntranceExam(ObservableCollection<Student> students)
@@ -112,14 +105,14 @@ namespace StudentStatistics.Services
 
         public static ObservableCollection<Student> DidNotGetToExam(ObservableCollection<Student> students)
         {
-            var studentsWithoutExam = students.Where(x => (x.SemesterResults != null && (x.SemesterResults.WrittenTestForm == null || x.SemesterResults.WrittenTestForm == 0)));
+            var studentsWithoutExam = students.Where(x => (x.SemesterResults != null && (x.SemesterResults.MissingPoints > 0)));
 
             return new ObservableCollection<Student>(studentsWithoutExam);
         }
 
         public static ObservableCollection<Student> DidGetToExam(ObservableCollection<Student> students)
         {
-            var studentsWithoutExam = students.Where(x => (x.SemesterResults != null && (x.SemesterResults.WrittenTestForm != null && x.SemesterResults.WrittenTestForm > 0)));
+            var studentsWithoutExam = students.Where(x => (x.SemesterResults != null && (x.SemesterResults.MissingPoints <= 0)));
 
             return new ObservableCollection<Student>(studentsWithoutExam);
         }
@@ -129,6 +122,13 @@ namespace StudentStatistics.Services
             var studentsOfSelectedTeacher = students.Where(x => (x.SemesterResults != null && x.SemesterResults.Teacher.Equals(teacherName)));
 
             return new ObservableCollection<Student>(studentsOfSelectedTeacher);
+        }
+
+        public static ObservableCollection<Student> HasGrade(char grade, ObservableCollection<Student> students)
+        {
+            var studentsWithWantedGrade = students.Where(x => (x.SemesterResults != null && x.SemesterResults.Grade.Equals(grade)));
+
+            return new ObservableCollection<Student>(studentsWithWantedGrade);
         }
 
         public static ObservableCollection<Student> StudentsStoppedComing(ObservableCollection<Student> students)

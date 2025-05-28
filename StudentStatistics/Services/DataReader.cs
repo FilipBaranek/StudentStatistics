@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.RegularExpressions;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using StudentStatistics.Models;
 
 namespace StudentStatistics.Services
@@ -24,34 +25,46 @@ namespace StudentStatistics.Services
             return students;
         }
 
-        public static void ReadSemesterFile(string semesterFilePath, string teacher, ObservableCollection<Student> students)
+        public static bool ReadSemesterFile(string semesterFilePath, string teacher, ObservableCollection<Student> students)
         {
-            using (var excelFile = new XLWorkbook(semesterFilePath))
+            try
             {
-                foreach (var sheet in excelFile.Worksheets)
+                using (var excelFile = new XLWorkbook(semesterFilePath))
                 {
-                    string studyGroup = sheet.Row(1).Cell(3).GetValue<string>();
-
-                    foreach (var row in sheet.RowsUsed())
+                    foreach (var sheet in excelFile.Worksheets)
                     {
-                        if (row.Cell(3).IsEmpty())
+                        string studyGroup = sheet.Row(1).Cell(3).GetValue<string>();
+
+                        foreach (var row in sheet.RowsUsed())
                         {
-                            break;
-                        }
+                            if (row.Cell(3).IsEmpty())
+                            {
+                                break;
+                            }
 
-                        if (row.RowNumber() > 1)
-                        {
-                            string name = "";
-                            string surname = "";
+                            if (row.RowNumber() > 1)
+                            {
+                                string name = "";
+                                string surname = "";
 
-                            SemesterResults semesterResults = GetSemesterResults(ref name, ref surname, teacher, studyGroup, row);
+                                SemesterResults semesterResults = GetSemesterResults(ref name, ref surname, teacher, studyGroup, row);
+                                Student? student = FindStudent(name, surname, students);
 
-                            Student student = FindStudent(name, surname, students);
-                            student.SemesterResults = semesterResults;
+                                if (student != null)
+                                {
+                                    student.SemesterResults = semesterResults;
+                                }
+                            }
                         }
                     }
-                }
-            };
+                };
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         private static void ReadAdmissionFile(string filePath, ObservableCollection<Student> students)
@@ -79,7 +92,7 @@ namespace StudentStatistics.Services
             double[] activities = new double[12];
             bool[] attendance = new bool[13];
             ReadAttendance(ref activities, ref attendance, row);
-            double activitiesSum = row.Cell(17).GetValue<double?>() != null ? row.Cell(17).GetDouble() : 0;
+            double activitiesSum = row.Cell(17).GetValue<double?>() != null ? Math.Round(row.Cell(17).GetDouble()) : 0;
             double firstTest = row.Cell(18).GetValue<double?>() != null ? row.Cell(18).GetDouble() : 0;
             double secondTest = row.Cell(19).GetValue<double?>() != null ? row.Cell(19).GetDouble() : 0;
             double testSum = row.Cell(20).GetValue<double?>() != null ? row.Cell(20).GetDouble() : 0;
@@ -132,7 +145,7 @@ namespace StudentStatistics.Services
             string? highSchoolName = !data[12].Equals("") ? data[12] : null;
             string highSchoolType = data[13];
             string? highSchoolLocation = !data[14].Equals("") ? data[14] : null;
-            double thirdYearAverage = FormatNumber(data[15]);
+            double thirdYearAverage = Math.Round(FormatNumber(data[15]), 2);
             double? externGraduationPart = !data[16].Equals("0") ? FormatNumber(data[16]) : null;
             double? externPartPercentile = !data[17].Equals("0") ? FormatNumber(data[17]) : null;
             double? scioPercentile = !data[18].Equals("0") ? FormatNumber(data[18]) : null;
@@ -149,9 +162,22 @@ namespace StudentStatistics.Services
             for (int i = 0; i < 13; ++i)
             {
                 var backgroundColor = row.Cell(i + 4).Style.Fill.BackgroundColor;
-                bool isAbsentColor = backgroundColor.ColorType == XLColorType.Color ? IsAbsentColor(backgroundColor, row.Cell(i + 3)) : IsAbsentTheme(backgroundColor);
+                bool isAbsentColor = false;
 
-                if (row.Cell(i + 3).GetValue<string>().Equals("n") || isAbsentColor)
+                if (backgroundColor.ColorType == XLColorType.Color)
+                {
+                    isAbsentColor = IsAbsentColor(backgroundColor);
+                }
+                else if (backgroundColor.ColorType == XLColorType.Theme)
+                {
+                    isAbsentColor = IsAbsentTheme(backgroundColor);
+                }
+                else if (backgroundColor.ColorType == XLColorType.Indexed)
+                {
+                    isAbsentColor = IsAbsentColorIndex(backgroundColor);
+                }
+
+                if ((!row.Cell(i + 4).IsEmpty() && row.Cell(i + 4).GetValue<string>().Equals("n")) || (row.Cell(i + 4).IsEmpty() && isAbsentColor))
                 {
                     attendance[i] = false;
                 }
@@ -167,19 +193,31 @@ namespace StudentStatistics.Services
             }
         }
 
-        private static bool IsAbsentColor(XLColor color, IXLCell cell)
+        private static bool IsAbsentColor(XLColor color)
         {
-            return cell.IsEmpty() || color == XLColor.White || color == XLColor.Red;
+            return color == XLColor.White || color == XLColor.Red;
         }
 
         private static bool IsAbsentTheme(XLColor color)
         {
-            return color.ThemeColor == XLThemeColor.Background1 || color.ThemeColor == XLThemeColor.Accent4;
+            return color.ThemeColor == XLThemeColor.Background1 || color.ThemeColor == XLThemeColor.Background2;
         }
 
-        private static Student FindStudent(string name, string surname, ObservableCollection<Student> students)
+        private static bool IsAbsentColorIndex(XLColor color)
         {
-            return students.Where(x => x.Name.Equals(name) && x.Surname.Equals(surname)).ElementAt(0);
+            return color.Indexed == 64;
+        }
+
+        private static Student? FindStudent(string name, string surname, ObservableCollection<Student> students)
+        {
+            try
+            {
+                return students.Where(x => x.Name.Equals(name) && x.Surname.Equals(surname)).ElementAt(0);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         private static double FormatNumber(string number)

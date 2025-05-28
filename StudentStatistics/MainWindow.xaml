@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:StudentStatistics"
         mc:Ignorable="d"
         WindowState="Maximized"
-        Title="MainWindow" Height="1080" Width="1920">
+        Title="StudentStatistics"
+        Icon="Images/icon.ico">
     <Grid>
         <ContentControl Content="{Binding Router.CurrentView}"/>
     </Grid>

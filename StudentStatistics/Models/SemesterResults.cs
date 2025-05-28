@@ -39,6 +39,23 @@ namespace StudentStatistics.Models
             }
         }
 
+        public double ExamSum
+        {
+            get
+            {
+                double examSum = 0;
+                if (WrittenTestForm != null)
+                {
+                    examSum += (double)WrittenTestForm;
+                }
+                if (OralTestForm != null)
+                {
+                    examSum += (double)OralTestForm;
+                }
+                return examSum;
+            }
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public SemesterResults(

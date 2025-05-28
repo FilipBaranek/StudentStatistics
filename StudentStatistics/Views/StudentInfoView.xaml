@@ -4,8 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:StudentStatistics.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="1080" d:DesignWidth="1920">
+             mc:Ignorable="d">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -36,7 +35,7 @@
                         <Image Source="/Images/back.png"
                                Stretch="None">
                             <Image.LayoutTransform>
-                                <ScaleTransform ScaleX="0.3" ScaleY="0.3" />
+                                <ScaleTransform ScaleX="0.26" ScaleY="0.26" />
                             </Image.LayoutTransform>
                         </Image>
                     </Button.Content>
@@ -86,7 +85,7 @@
                         <Image Source="/Images/question_mark.png"
                                Stretch="None">
                             <Image.LayoutTransform>
-                                <ScaleTransform ScaleX="0.05" ScaleY="0.05" />
+                                <ScaleTransform ScaleX="0.045" ScaleY="0.045" />
                             </Image.LayoutTransform>
                         </Image>
                     </Button.Content>
@@ -105,7 +104,7 @@
                         <Image Source="/Images/turn_off.png"
                                Stretch="None">
                             <Image.LayoutTransform>
-                                <ScaleTransform ScaleX="0.15" ScaleY="0.15" />
+                                <ScaleTransform ScaleX="0.24" ScaleY="0.24" />
                             </Image.LayoutTransform>
                         </Image>
                     </Button.Content>
@@ -208,7 +207,7 @@
                                Style="{StaticResource InfoTextValue}"/>
                     <TextBlock Grid.Row="7"
                                Grid.Column="1"
-                               Text="{Binding Student.SemesterResults.WrittenTestForm}"
+                               Text="{Binding Student.SemesterResults.ExamSum}"
                                Style="{StaticResource InfoTextValue}"/>
                     <TextBlock Grid.Row="8"
                                Grid.Column="1"
@@ -293,7 +292,7 @@
                                Style="{StaticResource InfoTextValue}"/>
                     <TextBlock Grid.Row="5"
                                Grid.Column="1"
-                               Text="{Binding Student.AdmissionProcess.FirstAlternativeStudyProgram}"
+                               Text="{Binding Student.AdmissionProcess.AlternativeStudyProgram}"
                                Style="{StaticResource InfoTextValue}"/>
                     <TextBlock Grid.Row="6"
                                Grid.Column="1"

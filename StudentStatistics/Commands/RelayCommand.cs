@@ -1,6 +1,4 @@
-﻿using System.Windows.Input;
-
-namespace StudentStatistics.Commands
+﻿namespace StudentStatistics.Commands
 {
     public class RelayCommand : RelayCommandBase
     {

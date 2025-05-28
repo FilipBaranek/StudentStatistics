@@ -15,6 +15,7 @@ namespace StudentStatistics.ViewModels
     public class StudentsStatisticsViewModel : INotifyPropertyChanged
     {
         private readonly Router _router;
+        private bool? _successfullStudents;
         private ObservableCollection<Student> _students;
 
         public AppCloser AppCloser { get; private set; }
@@ -32,6 +33,17 @@ namespace StudentStatistics.ViewModels
             {
                 _mainHeaderText = value;
                 OnPropertyChanged(nameof(MainHeaderText));
+            }
+        }
+
+        private string _semesterResultsHeadline;
+        public string SemesterResultsHeadline
+        {
+            get => _semesterResultsHeadline;
+            set
+            {
+                _semesterResultsHeadline = value;
+                OnPropertyChanged(nameof(SemesterResultsHeadline));
             }
         }
 
@@ -179,13 +191,13 @@ namespace StudentStatistics.ViewModels
         }
 
         private IEnumerable<ISeries>? _semesterSuccesSeries;
-        public IEnumerable<ISeries>? SemesterSuccessSeries
+        public IEnumerable<ISeries>? SemesterResultsSeries
         {
             get => _semesterSuccesSeries;
             set
             {
                 _semesterSuccesSeries = value;
-                OnPropertyChanged(nameof(SemesterSuccessSeries));
+                OnPropertyChanged(nameof(SemesterResultsSeries));
             }
         }
 
@@ -195,6 +207,7 @@ namespace StudentStatistics.ViewModels
         {
             _router = router;
             _mainHeaderText = "";
+            _semesterResultsHeadline = "";
             _students = students;
             _choosenStudents= new ObservableCollection<Student>();
             _typeDecisionVisbility = Visibility.Visible;
@@ -220,11 +233,13 @@ namespace StudentStatistics.ViewModels
         {
             if (type.Equals("successful"))
             {
+                _successfullStudents = true;
                 ChoosenStudents = StudentSorter.SuccessfullStudents(_students);
                 MainHeaderText = "Úspešní študenti";
             }
             else if (type.Equals("unsuccessful"))
             {
+                _successfullStudents= false;
                 ChoosenStudents = StudentSorter.UnsuccessfullStudents(_students);
                 MainHeaderText = "Neúspešní študenti";
             }
@@ -240,8 +255,9 @@ namespace StudentStatistics.ViewModels
         {
             SchoolTypeSeries = new ISeries[]
             {
-                new PieSeries<int> { Values = new int[] { StudentSorter.GrammarSchoolStudents(ChoosenStudents).Count }, Name = "Študenti gymnázia" },
-                new PieSeries<int> { Values = new int[] { StudentSorter.VocationalSchoolStudents(ChoosenStudents).Count }, Name = "Študenti odborných škôl" }
+                new PieSeries<int> { Values = new int[] { StudentSorter.HasSchoolTypeStudents("gymnázium", ChoosenStudents).Count }, Name = "Gymnázium" },
+                new PieSeries<int> { Values = new int[] { StudentSorter.HasSchoolTypeStudents("str.odb. škola", ChoosenStudents).Count }, Name = "Odborná" },
+                new PieSeries<int> { Values = new int[] { StudentSorter.HasSchoolTypeStudents("zahraničná stredná škola", ChoosenStudents).Count }, Name = "Zahraničná" }
             };
 
             AdmissionTypeSeries = new ISeries[]
@@ -274,19 +290,42 @@ namespace StudentStatistics.ViewModels
                 new PieSeries<int> { Values = new int[] { StudentSorter.StudentsKeptComing(ChoosenStudents).Count }, Name = "Chodili na cvičenia", Fill = new SolidColorPaint(SKColors.Red) }
             };
 
-            SemesterSuccessSeries = new ISeries[]
-            {
-                new PieSeries<int> { Values = new int[] { StudentSorter.DidGetToExam(ChoosenStudents).Count }, Name = "Boli na skúške", Fill = new SolidColorPaint(SKColors.DarkRed) },
-                new PieSeries<int> { Values = new int[] { StudentSorter.DidNotGetToExam(ChoosenStudents).Count }, Name = "Neboli na skúške", Fill = new SolidColorPaint(SKColors.DarkBlue) }
-            };
-
             TeachersSeries = new ISeries[]
             {
                 new PieSeries<int> { Values = new int[] { StudentSorter.StudentsWithTeacher("doc. PeaDr. Dalibor Gonda PhD.", ChoosenStudents).Count }, Name = "doc. PeaDr. Dalibor Gonda PhD.", Fill = new SolidColorPaint(SKColors.Turquoise) },
-                new PieSeries<int> { Values = new int[] { StudentSorter.StudentsWithTeacher("RNDr. Ida Stankovianska CSc.", ChoosenStudents).Count }, Name = "RNDr. Ida Stankovianska CSc.", Fill = new SolidColorPaint(SKColors.DarkBlue) },
-                new PieSeries<int> { Values = new int[] { StudentSorter.StudentsWithTeacher("Ing. Milan Straka PhD.", ChoosenStudents).Count }, Name = "Ing. Milan Straka PhD.", Fill = new SolidColorPaint(SKColors.Red) },
-                new PieSeries<int> { Values = new int[] { StudentSorter.StudentsWithTeacher("Ing. Maroš Janovec PhD.", ChoosenStudents).Count }, Name = "Ing. Maroš Janovec PhD.", Fill = new SolidColorPaint(SKColors.DarkRed) }
+                new PieSeries<int> { Values = new int[] { StudentSorter.StudentsWithTeacher("RNDr. Ida Stankovianska CSc.", ChoosenStudents).Count }, Name = "RNDr. Ida Stankovianska CSc.", Fill = new SolidColorPaint(SKColors.LightBlue) },
+                new PieSeries<int> { Values = new int[] { StudentSorter.StudentsWithTeacher("Ing. Milan Straka PhD.", ChoosenStudents).Count }, Name = "Ing. Milan Straka PhD.", Fill = new SolidColorPaint(SKColors.Blue) },
+                new PieSeries<int> { Values = new int[] { StudentSorter.StudentsWithTeacher("Ing. Maroš Janovec PhD.", ChoosenStudents).Count }, Name = "Ing. Maroš Janovec PhD.", Fill = new SolidColorPaint(SKColors.Purple) }
             };
+
+            SetSemesterReslutsSeries();
+        }
+
+        private void SetSemesterReslutsSeries()
+        {
+            if (_successfullStudents != null && _successfullStudents == true)
+            {
+                SemesterResultsSeries = new ISeries[]
+                {
+                    new PieSeries<int> { Values = new int[] { StudentSorter.HasGrade('A', ChoosenStudents).Count }, Name = "A", Fill = new SolidColorPaint(SKColors.Red) },
+                    new PieSeries<int> { Values = new int[] { StudentSorter.HasGrade('B', ChoosenStudents).Count }, Name = "B", Fill = new SolidColorPaint(SKColors.Purple) },
+                    new PieSeries<int> { Values = new int[] { StudentSorter.HasGrade('C', ChoosenStudents).Count }, Name = "C", Fill = new SolidColorPaint(SKColors.HotPink) },
+                    new PieSeries<int> { Values = new int[] { StudentSorter.HasGrade('D', ChoosenStudents).Count }, Name = "D", Fill = new SolidColorPaint(SKColors.LightBlue) },
+                    new PieSeries<int> { Values = new int[] { StudentSorter.HasGrade('E', ChoosenStudents).Count }, Name = "E", Fill = new SolidColorPaint(SKColors.Turquoise) }
+                };
+
+                SemesterResultsHeadline = "Známky";
+            }
+            else if (_successfullStudents != null && _successfullStudents == false)
+            {
+                SemesterResultsSeries = new ISeries[]
+                {
+                    new PieSeries<int> { Values = new int[] { StudentSorter.DidGetToExam(ChoosenStudents).Count }, Name = "Dostali sa na skúšku", Fill = new SolidColorPaint(SKColors.DarkRed) },
+                    new PieSeries<int> { Values = new int[] { StudentSorter.DidNotGetToExam(ChoosenStudents).Count }, Name = "Nedostali sa na skúšku", Fill = new SolidColorPaint(SKColors.DarkBlue) }
+                };
+
+                SemesterResultsHeadline = "Dostali sa na skúšku";
+            }
         }
 
         private void NextPage()

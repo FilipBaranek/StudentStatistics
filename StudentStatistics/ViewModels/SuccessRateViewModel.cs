@@ -16,7 +16,6 @@ namespace StudentStatistics.ViewModels
     public class SuccessRateViewModel : INotifyPropertyChanged
     {
         private readonly Router _router;
-        private bool _loadWithSemesterData;
         private bool? _multipleFiles;
         private string? _teacher;
         private string? _semesterFilePath;
@@ -42,6 +41,7 @@ namespace StudentStatistics.ViewModels
         public ICommand ConfirmEditStudentTrigger { get; private set; }
         public ICommand ConfirmFileOpenTrigger { get; private set; }
         public ICommand NavigateToStudentInfoTrigger { get; private set; }
+        public ICommand ExportToCSVCommand { get; private set; }
 
         private bool _successfullStudentsSelected;
         public bool SuccessfullStudentsSelected
@@ -328,6 +328,7 @@ namespace StudentStatistics.ViewModels
             ConfirmFileOpenTrigger = new RelayCommand(ConfirmFileOpen);
             ConfirmEditStudentTrigger = new RelayCommand(EditStudent);
             NavigateToStudentInfoTrigger = new RelayCommand(NavigateToStudentInfo);
+            ExportToCSVCommand = new RelayCommand(SaveToCSV);
         }
 
         private void OpenSingleFileGrid()
@@ -347,21 +348,16 @@ namespace StudentStatistics.ViewModels
             if (fileType.Equals("semester"))
             {
                 _semesterFilePath = FileHandler.OpenExcelFile();
-                TeacherWindowVisibility = Visibility.Visible;
+                
+                if (_semesterFilePath != null)
+                {
+                    TeacherWindowVisibility = Visibility.Visible;
+                }
             }
             else if (fileType.Equals("admission"))
             {
                 _admissionProcessFilePath = FileHandler.OpenCsvFile();
-                LoadAdmissionData();
-            }
-
-            if (_multipleFiles != null && _multipleFiles == true)
-            {
-                SetOpenMultipleFilesGridVisibility();
-            }
-            else
-            {
-                SetOpenFileGridVisibility();
+                SetAdmissionFileVisibility();
             }
         }
 
@@ -375,7 +371,7 @@ namespace StudentStatistics.ViewModels
         {
             if (fileType.Equals("semester"))
             {
-                _semesterFilePath = null;
+                _semesterFiles.Clear();
 
                 CheckmarkSemesterFileVisibility = Visibility.Collapsed;
                 RemoveSemesterFileVisibility = Visibility.Collapsed;
@@ -395,9 +391,9 @@ namespace StudentStatistics.ViewModels
 
         private void RemoveFiles()
         {
+            _semesterFiles.Clear();
             _semesterFilePath = null;
             _admissionProcessFilePath = null;
-
             _loadedAllStudents = null;
             _loadedSuccessfullStudents.Clear();
             _loadedUnsuccessfullStudents.Clear();
@@ -409,7 +405,6 @@ namespace StudentStatistics.ViewModels
 
             RemoveFilesVisibility = Visibility.Hidden;
             StatisticsVisibility = Visibility.Hidden;
-            SetOpenFileGridVisibility();
         }
 
         private async void FileErrorInfo()
@@ -418,64 +413,72 @@ namespace StudentStatistics.ViewModels
 
             SemesterButtonVisibility = Visibility.Collapsed;
             AdmissionButtonVisibility = Visibility.Collapsed;
+            CheckmarkSemesterFileVisibility = Visibility.Collapsed;
+            CheckmarkAdmissionFileVisibility = Visibility.Collapsed;
+            RemoveSemesterFileVisibility = Visibility.Collapsed;
+            RemoveAdmissionFileVisibility = Visibility.Collapsed;
             WrongFileVisibility = Visibility.Visible;
 
             await Task.Delay(5000);
 
             WrongFileVisibility = Visibility.Collapsed;
-            
-            SetOpenFileGridVisibility();
+            SemesterButtonVisibility = Visibility.Visible;
+            AdmissionButtonVisibility = Visibility.Visible;
         }
 
         private void SelectTeacher(string teacher)
         {
             _teacher = teacher;
             TeacherWindowVisibility = Visibility.Hidden;
-            LoadSemesterData();
+
+            if (_semesterFilePath != null && _teacher != null)
+            {
+                _semesterFiles.Add(_semesterFilePath, _teacher);
+                _teacher = null;
+                _semesterFilePath = null;
+
+                if (_multipleFiles != null && _multipleFiles == true)
+                {
+                    SetMultipleSemesterFilesVisibility();
+                }
+                else
+                {
+                    SetSemesterFileVisibility();
+                }
+            }
         }
-
-
 
         private void LoadAdmissionData()
         {
             if (_admissionProcessFilePath != null)
             {
                 _loadedAllStudents = DataReader.ReadAdmissionFile(_admissionProcessFilePath);
-
-                if (_loadWithSemesterData)
-                {
-                    LoadSemesterData();
-                }
             }
         }
 
-        private void LoadSemesterData()
+        private bool LoadSemesterData()
         {
-            if (_semesterFilePath != null && _teacher != null)
-            {
-                _semesterFiles.Add(_semesterFilePath, _teacher);
-                _teacher = null;
-            }
-
-            if (_loadedAllStudents != null)
+            if (_loadedAllStudents != null && _semesterFiles.Count > 0)
             {
                 foreach (KeyValuePair<string, string> file in _semesterFiles)
                 {
-                    DataReader.ReadSemesterFile(file.Key, file.Value, _loadedAllStudents);
-                    _loadWithSemesterData = false;
-                    _teacher = null;
+                    if (!DataReader.ReadSemesterFile(file.Key, file.Value, _loadedAllStudents))
+                    {
+                        return false;
+                    }
                 }
                 _semesterFiles.Clear();
+                
+                return true;
             }
-            else
-            {
-                _loadWithSemesterData = true;
-            }
+            return false;
         }
 
         private void LoadStudents()
         {
-            if (_loadedAllStudents != null)
+            LoadAdmissionData();
+
+            if (_loadedAllStudents != null && LoadSemesterData())
             {
                 _loadedSuccessfullStudents = StudentSorter.SuccessfullStudents(_loadedAllStudents);
                 _loadedUnsuccessfullStudents = StudentSorter.UnsuccessfullStudents(_loadedAllStudents);
@@ -488,18 +491,30 @@ namespace StudentStatistics.ViewModels
                 StatisticsVisibility = Visibility.Visible;
 
                 UpdatePieChart();
+
+                _semesterFiles.Clear();
+                _admissionProcessFilePath = null;
+                
+                if (_multipleFiles != null && _multipleFiles == true)
+                {
+                    SetMultipleSemesterFilesVisibility();
+                }
+                else
+                {
+                    SetSemesterFileVisibility();
+                }
+                SetAdmissionFileVisibility();
             }
             else
             {
+                RemoveFiles();
                 FileErrorInfo();
             }
         }
 
-        private void SetOpenFileGridVisibility()
+        private void SetSemesterFileVisibility()
         {
-            SetAdmissionFileVisibility();
-
-            if (_semesterFilePath != null)
+            if (_semesterFiles.Count > 0)
             {
                 RemoveSemesterFileVisibility = Visibility.Visible;
                 SemesterButtonVisibility = Visibility.Collapsed;
@@ -515,11 +530,9 @@ namespace StudentStatistics.ViewModels
             SetConfirmFilesVisibility();
         }
 
-        private async void SetOpenMultipleFilesGridVisibility()
+        private async void SetMultipleSemesterFilesVisibility()
         {
-            SetAdmissionFileVisibility();
-
-            if (_semesterFilePath != null)
+            if (_semesterFiles.Count > 0)
             {
                 RemoveSemesterFileVisibility = Visibility.Visible;
                 SemesterButtonVisibility = Visibility.Collapsed;
@@ -529,6 +542,12 @@ namespace StudentStatistics.ViewModels
 
                 SemesterButtonVisibility = Visibility.Visible;
                 CheckmarkSemesterFileVisibility = Visibility.Collapsed;
+            }
+            else
+            {
+                SemesterButtonVisibility = Visibility.Visible;
+                CheckmarkSemesterFileVisibility = Visibility.Collapsed;
+                RemoveSemesterFileVisibility = Visibility.Collapsed;
             }
 
             SetConfirmFilesVisibility();
@@ -548,15 +567,15 @@ namespace StudentStatistics.ViewModels
                 CheckmarkAdmissionFileVisibility = Visibility.Collapsed;
                 RemoveAdmissionFileVisibility = Visibility.Collapsed;
             }
+
+            SetConfirmFilesVisibility();
         }
 
         private void SetConfirmFilesVisibility()
         {
-            if (_admissionProcessFilePath != null && _semesterFilePath != null)
+            if (_admissionProcessFilePath != null && _semesterFiles.Count > 0)
             {
                 ConfirmFilesVisibility = Visibility.Visible;
-                _semesterFilePath = null;
-                _admissionProcessFilePath = null;
             }
         }
 
@@ -566,15 +585,6 @@ namespace StudentStatistics.ViewModels
             {
                 RemoveFiles();
                 NewFileGridVisibility = Visibility.Visible;
-
-                if (_multipleFiles != null && _multipleFiles == true)
-                {
-                    SetOpenMultipleFilesGridVisibility();
-                }
-                else
-                {
-                    SetOpenFileGridVisibility();
-                }
             }
             else
             {
@@ -591,14 +601,14 @@ namespace StudentStatistics.ViewModels
                 {
                     Values = new int[] { SuccessfullStudents.Count },
                     Name = "Úspešní študenti",
-                    Fill = new SolidColorPaint(new SKColor(255, 248, 77)),
+                    Fill = new SolidColorPaint(SKColors.YellowGreen),
                     Stroke = new SolidColorPaint(SKColors.Black)
                 },
                 new PieSeries<int> 
                 { 
                     Values = new int[] { UnsuccessfullStudents.Count },
                     Name = "Neúspešní študenti",
-                    Fill = new SolidColorPaint(SKColors.YellowGreen),
+                    Fill = new SolidColorPaint(new SKColor(255, 248, 77)),
                     Stroke = new SolidColorPaint(SKColors.Black)
                 }
             };
@@ -620,22 +630,37 @@ namespace StudentStatistics.ViewModels
             }
         }
 
-        private Student? FindSelectedStudent(ref ObservableCollection<Student> selectedStudentTab)
+        private Student? FindSelectedStudent()
         {
             if (SuccessfullStudentsSelected)
             {
-                selectedStudentTab = SuccessfullStudents;
                 return StudentSorter.FindSelectedStudent(SuccessfullStudents);
             }
             else if (UnsuccessfullStudentsSelected)
             {
-                selectedStudentTab = UnsuccessfullStudents;
                 return StudentSorter.FindSelectedStudent(UnsuccessfullStudents);
             }
             else if (AllStudentsSelected)
             {
-                selectedStudentTab = Students;
                 return StudentSorter.FindSelectedStudent(Students);
+            }
+
+            return null;
+        }
+
+        private ObservableCollection<Student>? FindSelectedTab()
+        {
+            if (SuccessfullStudentsSelected)
+            {
+                return SuccessfullStudents;
+            }
+            else if (UnsuccessfullStudentsSelected)
+            {
+                return SuccessfullStudents;
+            }
+            else if (AllStudentsSelected)
+            {
+                return SuccessfullStudents;
             }
 
             return null;
@@ -643,12 +668,12 @@ namespace StudentStatistics.ViewModels
 
         private void RemoveStudent()
         {
-            ObservableCollection<Student> selectedStudentTab = new ObservableCollection<Student>();
-            Student? selectedStudent = FindSelectedStudent(ref selectedStudentTab);
+            Student? selectedStudent = FindSelectedStudent();
+            var selectedTab = FindSelectedTab();
 
-            if (selectedStudent != null)
+            if (selectedStudent != null && selectedTab != null)
             {
-                selectedStudentTab.Remove(selectedStudent);
+                selectedTab.Remove(selectedStudent);
             }
         }
 
@@ -671,8 +696,7 @@ namespace StudentStatistics.ViewModels
 
         private void LoadEditStudent()
         {
-            ObservableCollection<Student> selectedStudentTab = new ObservableCollection<Student>();
-            _selectedStudent = FindSelectedStudent(ref selectedStudentTab);
+            _selectedStudent = FindSelectedStudent();
 
             if (_selectedStudent != null)
             {
@@ -716,13 +740,23 @@ namespace StudentStatistics.ViewModels
 
         private void NavigateToStudentInfo()
         {
-            ObservableCollection<Student> selectedStudentTab = new ObservableCollection<Student>();
-            Student? selectedStudent = FindSelectedStudent(ref selectedStudentTab);
+            Student? selectedStudent = FindSelectedStudent();
 
             if (selectedStudent != null)
             {
                 _router.NavigateTo(new StudentInfoView(_router, selectedStudent));
             }
+        }
+
+        private void SaveToCSV()
+        {
+            var selectedTab = FindSelectedTab();
+
+            if (selectedTab != null)
+            {
+                FileHandler.ExportToCsv(selectedTab);
+            }
+
         }
 
         public void OnPropertyChanged(string propertyName)

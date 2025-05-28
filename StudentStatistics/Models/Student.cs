@@ -46,7 +46,7 @@ namespace StudentStatistics.Models
         private string _studyProgram;
         public string StudyProgram
         {
-            get => _studyProgram;
+            get => _studyProgram.Equals("informačné a sieťové technológie") ? "IAST" : _studyProgram;
             set
             {
                 _studyProgram = value;
