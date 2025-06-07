@@ -23,3 +23,4 @@
 
 ## Technické požiadavky
 - operačný systém Windows od verzie 10 alebo novší
+ 
